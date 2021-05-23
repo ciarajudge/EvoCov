@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+from Bio import Align
 
 folder = sys.argv[1]
 files = os.listdir(folder)
@@ -25,6 +26,7 @@ for l in sequencefile:
         s = ""
     else:
         s = s+l
+sequences = sequences[1:]
 
 #################
 #align sequences#
