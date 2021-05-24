@@ -51,10 +51,40 @@ for sequence in tqdm(sequences):
         count += 1
     except:
         continue
-"""
+
 
 outfile = open("counts.txt", "w")
 for x in score:
     outfile.write(str(x) + "\n")
 outfile.close()
+"""
 
+def uniquemutationchecker(num):
+    if spikeseq[num] == sequence[num]:
+        return 0
+    else:
+        if sequence[num] in mutationdict[num]:
+            return 0
+        else:
+            mutationdict[num].append(sequence[num])
+            return 1
+
+
+
+keys = range(0, 1273)
+mutationdict = {key: ["X"] for key in keys}
+
+count = 0
+for sequence in tqdm(sequences):
+    try:
+        newlist = list(map(uniquemutationchecker, range(0,(len(spikeseq)-1))))
+        score = list(map(add, score, newlist))
+        count += 1
+    except:
+        continue
+
+print(count)
+outfile = open("uniquecounts.txt", "w")
+for x in score:
+    outfile.write(str(x) + "\n")
+outfile.close()
