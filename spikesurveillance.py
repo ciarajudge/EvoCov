@@ -69,8 +69,25 @@ countries = [i.split("|")[-1].replace("\n", "") for i in labels]
 dates = [i.split("|")[2] for i in labels]
 metaandseqdict = [{'date': date, 'country': country, 'sequence': sequence} for date,country,sequence in zip(dates,countries,sequences)]
 
-numpy.save('sequencedict.npy', metaandseqdict) 
 
+outfile = open("correctsequences.txt", "w")
+for x in sequences:
+    outfile.write(str(x) + "\n")
+outfile.close()
+outfile = open("correctlabels.txt", "w")
+for x in labels:
+    outfile.write(str(x) + "\n")
+outfile.close()
+#numpy.save('sequencedict.npy', metaandseqdict) 
+
+#####Read in Sequence Dict#####
+"""
+print("Reading in Sequence Dictionary")
+metaandseqdict = numpy.load('sequencedict.npy',allow_pickle='TRUE').item()
+print("Sequence Dictionary Loaded")
+sequences = metaandseqdict["sequence"]
+len(sequences)
+"""
 #####Simple Counts#####
 """
 count = 0
@@ -91,7 +108,10 @@ outfile.close()
 print(count)
 sys.exit()
 """
+
+
 #####Unique Mutations Count#####
+"""
 keys = range(0, 1273)
 mutationdict = {key: ["X"] for key in keys}
 count = 0
@@ -108,4 +128,25 @@ outfile = open("fixeduniquecounts.txt", "w")
 for x in score:
     outfile.write(str(x) + "\n")
 outfile.close()
+"""
+
+
+#####Mutation Tally#####
+"""
+muttable = numpy.zeros(21, 222)
+for sequence in tqdm(sequences):
+    try:
+        newlist = list(map(uniquemutationchecker, range(0,(len(spikeseq)-1))))
+        score = list(map(add, score, newlist))
+        count += 1
+    except:
+        continue
+
+"""
+
+
+
+
+
+
 

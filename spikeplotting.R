@@ -1,5 +1,6 @@
 library(dplyr)
 library(tidyverse)
+library(RColorBrewer)
 
 initialisespike <- function(ylabel, dataset, type) {
   if (type == 1) {
@@ -41,9 +42,9 @@ initialiseRBD <- function(ylabel, dataset, type) {
     addition2 <- 0
   }
   else if (type == 3) {
-    limit = max(dataset) + 1
-    addition1 <- 2
-    addition2 <- 1
+    limit = max(dataset[319:541])+1
+    addition1 <- 0
+    addition2 <- 0
   }
   plot(c(1, 1273), c(0, 0), xlim = c(319,541),ylim = c(0, (limit+addition1)), 
        ylab = ylabel, pch = ".", xlab = "locus (by codon)", xaxs="i", yaxs="i")
@@ -122,7 +123,21 @@ initialiseRBD("Frequency mutated", frequencies, 2)
 lines(1:length(counts), frequencies, type = "l")
 addmutations(1,1,1,1,1)
 
-uniquecounts <- as.numeric(readLines("uniquecounts.txt"))
+uniquecounts <- as.numeric(readLines("fixeduniquecounts.txt"))
 initialisespike("Number of Mutation Events", uniquecounts, 3)
 lines(1:length(counts), uniquecounts, type = "l")
 
+initialiseRBD("Number of Mutation Events", uniquecounts, 3)
+colorindexes <- rank(counts[319:541], ties.method = "random")
+rect(319, 0, 541, 12, 
+     col = adjustcolor("navy", alpha.f = 0.9), border = NA)
+numcols <- 541-319+1
+colors <- heat.colors(numcols)
+count <- 0
+for(x in seq(319,541)){
+  count <- count + 1
+  lines(c(x,x), c(0, uniquecounts[x]), lwd = 5, col = colors[colorindexes[count]])
+}
+gradientLegend(valRange = round(c(min(frequencies[319:541]), max(frequencies[319:541])),3),
+               color = "heat", nCol = numcols, side = 3, pos=c(485, 9, 538, 10), coords = TRUE,
+               border.col = NULL, tick.col = "white", fit.margin = TRUE)
