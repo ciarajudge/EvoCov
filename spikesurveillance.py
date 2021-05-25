@@ -72,6 +72,7 @@ metaandseqdict = [{'date': date, 'country': country, 'sequence': sequence} for d
 numpy.save('sequencedict.npy', metaandseqdict) 
 
 #####Simple Counts#####
+"""
 count = 0
 for sequence in tqdm(sequences):
     try:
@@ -89,8 +90,8 @@ outfile.close()
 
 print(count)
 sys.exit()
-
-
+"""
+#####Unique Mutations Count#####
 keys = range(0, 1273)
 mutationdict = {key: ["X"] for key in keys}
 count = 0
@@ -103,7 +104,7 @@ for sequence in tqdm(sequences):
         continue
 
 print(count)
-outfile = open("uniquecounts.txt", "w")
+outfile = open("fixeduniquecounts.txt", "w")
 for x in score:
     outfile.write(str(x) + "\n")
 outfile.close()

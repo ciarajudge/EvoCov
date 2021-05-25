@@ -29,7 +29,31 @@ initialisespike <- function(ylabel, dataset, type) {
   text(70, (limit+addition2), "S1 Subunit")
   text(600, (limit+addition2), "S2 Subunit")
 }
-
+initialiseRBD <- function(ylabel, dataset, type) {
+  if (type == 1) {
+    limit = max(dataset)
+    addition1 <- 70000
+    addition2 <- 30000
+  }
+  else if (type == 2) {
+    limit = max(dataset[319:541])+0.05
+    addition1 <- 0
+    addition2 <- 0
+  }
+  else if (type == 3) {
+    limit = max(dataset) + 1
+    addition1 <- 2
+    addition2 <- 1
+  }
+  plot(c(1, 1273), c(0, 0), xlim = c(319,541),ylim = c(0, (limit+addition1)), 
+       ylab = ylabel, pch = ".", xlab = "locus (by codon)", xaxs="i", yaxs="i")
+  rect(13, 0, 304, limit, 
+       col = adjustcolor("red", alpha.f = 0.2), border = NA)
+  rect(319, 0, 541, limit, 
+       col = adjustcolor("green", alpha.f = 0.2), border = NA)
+  rect(543, 0, 1208, limit, 
+       col = adjustcolor("blue", alpha.f = 0.2), border = NA)
+}
 addmutations <- function(b117, b1351, p1, b1427, b1429) {
   if (b117 == 1) {
     abline(v=69, col = "red")
@@ -91,6 +115,10 @@ lines(1:length(counts), counts, type = "l")
 
 frequencies <- counts/1600000
 initialisespike("Frequency mutated", frequencies, 2)
+lines(1:length(counts), frequencies, type = "l")
+addmutations(1,1,1,1,1)
+
+initialiseRBD("Frequency mutated", frequencies, 2)
 lines(1:length(counts), frequencies, type = "l")
 addmutations(1,1,1,1,1)
 
