@@ -30,7 +30,7 @@ initialisespike <- function(ylabel, dataset, type) {
   text(600, (limit+addition2), "S2 Subunit")
 }
 
-addmutations <- function(b117, b617, e484, p1) {
+addmutations <- function(b117, b1351, p1, b1427, b1429) {
   if (b117 == 1) {
     abline(v=69, col = "red")
     abline(v=70, col = "red")
@@ -46,9 +46,44 @@ addmutations <- function(b117, b617, e484, p1) {
     abline(v=1118, col = "blue")
     abline(v=1191, col = "green")
   }
+  if (b1351 == 1) {
+    abline(v=241, col = "red")
+    abline(v=242, col = "red")
+    abline(v=243, col = "red")
+    abline(v=80, col = "blue")
+    abline(v=215, col = "blue")
+    abline(v=417, col = "blue")
+    abline(v=484, col = "blue")
+    abline(v=501, col = "blue")
+    abline(v=614, col = "blue")
+    abline(v=701, col = "blue")
+  }
+  if (p1 == 1) {
+    abline(v=18, col = "blue")
+    abline(v=20, col = "blue")
+    abline(v=26, col = "blue")
+    abline(v=138, col = "blue")
+    abline(v=190, col = "blue")
+    abline(v=417, col = "blue")
+    abline(v=484, col = "blue")
+    abline(v=501, col = "blue")
+    abline(v=614, col = "blue")
+    abline(v=655, col = "blue")
+    abline(v=1027, col = "blue")
+  }
+  if (b1427 == 1) {
+    abline(v=452, col = "blue")
+    abline(v=614, col = "blue")
+  }
+  if (b1429 == 1) {
+    abline(v=13, col = "blue")
+    abline(v=152, col = "blue")
+    abline(v=452, col = "blue")
+    abline(v=614, col = "blue")
+  }
 }
 
-counts <- as.numeric(readLines("counts.txt"))
+counts <- as.numeric(readLines("fixedcounts.txt"))
 plot(1:length(counts), counts, type = "l")
 
 initialisespike("Number of Mutations", counts, 1)
@@ -57,7 +92,7 @@ lines(1:length(counts), counts, type = "l")
 frequencies <- counts/1600000
 initialisespike("Frequency mutated", frequencies, 2)
 lines(1:length(counts), frequencies, type = "l")
-addmutations(1,0,0,0)
+addmutations(1,1,1,1,1)
 
 uniquecounts <- as.numeric(readLines("uniquecounts.txt"))
 initialisespike("Number of Mutation Events", uniquecounts, 3)
