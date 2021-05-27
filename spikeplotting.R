@@ -46,6 +46,11 @@ initialiseRBD <- function(ylabel, dataset, type) {
     addition1 <- 0
     addition2 <- 0
   }
+  else if (type == 4) {
+    limit = 10000
+    addition1 <- 0
+    addition2 <- 0
+  }
   plot(c(1, 1273), c(0, 0), xlim = c(319,541),ylim = c(0, (limit+addition1)), 
        ylab = ylabel, pch = ".", xlab = "locus (by codon)", xaxs="i", yaxs="i")
   rect(13, 0, 304, limit, 
