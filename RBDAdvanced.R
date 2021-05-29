@@ -79,6 +79,7 @@ pb$tick(0)
 baseline <- rep(0, length(spikeseq))
 for (s in 1:length(sequences1)){
   sequence <- sequences1[[s]]
+  if (any(is.na(sequence))) {next}
   pb$tick()
   muts <- c()
   for (pos in 1:length(sequence)) {
@@ -103,4 +104,6 @@ for (s in sequences1){
   }
 }
 
+
+write.csv(CorrelationTable, "prelimcorrelationanalysis.csv")
 
