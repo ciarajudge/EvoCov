@@ -1,8 +1,11 @@
 library(dplyr)
 library(tidyverse)
 library(progress)
+library(gtools)
 
 MutationTable <- matrix(0, nrow = 22, ncol = 223)
+
+CorrelationTable <- matrix(0, nrow = 223, ncol = 223)
 
 AAs <- c("A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P",
          "S", "T", "W", "Y", "V", "X", "*")
@@ -69,5 +72,35 @@ for (pos in 1:ncol(MutationTable)) {
   y1 <- 0
   y2 <- 2000
   lines(c(x,x), c(y1, y2), col = colors[spikeseq[pos]], lwd = 6, lend = 1)
-
 }
+
+pb <- progress_bar$new(total = length(sequences1))
+pb$tick(0)
+baseline <- rep(0, length(spikeseq))
+for (s in 1:length(sequences1)){
+  sequence <- sequences1[[s]]
+  pb$tick()
+  muts <- c()
+  for (pos in 1:length(sequence)) {
+    if (sequence[pos] != spikeseq[pos]){
+      muts <- append(muts, pos)
+      baseline[pos] <- baseline[pos]+1
+    }
+  }
+  if (length(muts) > 1) {
+    perms <- permutations(n=length(muts),r=2,v=muts,repeats.allowed=F)
+    for (row in 1:nrow(perms)) {
+      m1 <- perms[row, 1]
+      m2 <- perms[row, 2]
+      CorrelationTable[m1,m2] <- CorrelationTable[m1,m2] +1
+    }
+  }
+}
+
+for (s in sequences1){
+  if (length(unlist(s)) != 223) {
+    print(length(unlist(s)))
+  }
+}
+
+
