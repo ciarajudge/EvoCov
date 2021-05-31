@@ -5,8 +5,6 @@ library(gtools)
 
 MutationTable <- matrix(0, nrow = 22, ncol = 223)
 
-CorrelationTable <- matrix(0, nrow = 223, ncol = 223)
-
 AAs <- c("A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P",
          "S", "T", "W", "Y", "V", "X", "*")
 
@@ -27,7 +25,7 @@ tidyer <- function(s) {
 }
 
 sequences <- readLines("correctsequences.txt")
-sequences1 <- lapply(sequences[1:100000], try(tidyer, TRUE))
+sequences1 <- lapply(sequences[1:200000], try(tidyer, TRUE))
 pb <- progress_bar$new(total = length(sequences1))
 pb$tick(0)
 for (s in 1:length(sequences1)) {
@@ -74,6 +72,13 @@ for (pos in 1:ncol(MutationTable)) {
   lines(c(x,x), c(y1, y2), col = colors[spikeseq[pos]], lwd = 6, lend = 1)
 }
 
+
+
+
+
+
+CorrelationTable <- matrix(0, nrow = 223, ncol = 223)
+EitherOrTable <- matrix(0, nrow = 223, ncol = 223)
 pb <- progress_bar$new(total = length(sequences1))
 pb$tick(0)
 baseline <- rep(0, length(spikeseq))
@@ -95,14 +100,64 @@ for (s in 1:length(sequences1)){
       m2 <- perms[row, 2]
       CorrelationTable[m1,m2] <- CorrelationTable[m1,m2] +1
     }
+    for (mutation in muts) {
+      EitherOrTable[,mutation] <- EitherOrTable[,mutation] + 1
+      for (mutation2 in muts) {
+        EitherOrTable[mutation2,mutation] <- EitherOrTable[mutation2,mutation] - 1
+      }
+    }
+  }
+  if (length(muts) == 1) {
+    EitherOrTable[,muts[1]] <- EitherOrTable[,muts[1]] +1
+    EitherOrTable[muts[1],muts[1]] <- 0
   }
 }
 
-for (s in sequences1){
-  if (length(unlist(s)) != 223) {
-    print(length(unlist(s)))
+phicoefficients <- matrix(0, nrow = 223, ncol = 223)
+for (i in 1:nrow(CorrelationTable)) {
+  for (j in 1:ncol(CorrelationTable)) {
+    if (i==j) {next}
+    i_on <- baseline[i]
+    j_on <- baseline[j]
+    i_off <- 200000 - i_on
+    j_off <- 200000 - j_on
+    both_on <- CorrelationTable[i,j]
+    both_off <- 200000 - both_on
+    i_on_j_off <- EitherOrTable[j,i]
+    j_on_i_off <- EitherOrTable[i,j]
+    phi <- ((both_on*both_off)-(i_on_j_off*i_on_j_off))/(sqrt(i_on*i_off*j_on*j_off))
+    phicoefficients[i,j] <- phicoefficients[j,i] <- phi
   }
 }
+
+heatmapmaker <- function(matrix, names1, names2) {
+  par(pty="s")
+  library(RColorBrewer)
+  dimnames(matrix) <- list(as.character(names1), as.character(names2))
+  newdf <- as_tibble(matrix, rownames = NA)
+  newdf <- cbind(firstletter = as.character(names1), newdf)
+  newdf <- pivot_longer(newdf, !firstletter)
+  newdf$firstletter <- as.character(newdf$firstletter)
+  names(newdf)[1] <- "n"
+  names(newdf)[2] <- "t"
+  names(newdf)[3] <- "variable"
+  column2 <- rep(names2, length(names1))
+  newdf$t <- as.character(column2)
+  newdf$t <- as.numeric(newdf$t)
+  newdf$n <- as.numeric(newdf$n)
+  uniquepi <- sort(unique(newdf$variable))
+  newdf <- data.frame(cbind(newdf, rep(0, nrow(newdf))))
+  colors <- c(rainbow(length(uniquepi)), "black")
+  names(newdf)[4] <- "color"
+  for (i in 1:nrow(newdf)){
+    newdf[i, 4] <- match(newdf[i,3], uniquepi)
+  }
+  plot(newdf$t, newdf$n, col = colors[length(colors) + 1 - newdf$color], 
+       pch = 15, cex = 1.6, ylab = "Locus (AA)", xlab = "Locus (AA)", xaxs = "i", yaxs = "i")
+}
+
+heatmapmaker(CorrelationTable, 319:541, 319:541)
+heatmapmaker(phicoefficients, 319:541, 319:541)
 
 
 write.csv(CorrelationTable, "prelimcorrelationanalysis.csv")
