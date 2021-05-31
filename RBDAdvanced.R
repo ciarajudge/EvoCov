@@ -130,7 +130,8 @@ for (i in 1:nrow(CorrelationTable)) {
     i_on_j_off <- EitherOrTable[j,i]
     j_on_i_off <- EitherOrTable[i,j]
     both_off <- count - (both_on + i_on_j_off +j_on_i_off)
-    phi <- ((both_on*both_off)-(i_on_j_off*i_on_j_off))/(sqrt(i_on*i_off*j_on*j_off))
+    #phi <- ((both_on*both_off)-(i_on_j_off*i_on_j_off))/(sqrt(i_on*i_off*j_on*j_off))
+    phi <- (((i_on + i_off)*both_on)-(i_on*j_on))/sqrt(i_on*j_on*(count-i_on)*(count-j_on))
     phicoefficients[i,j] <- phicoefficients[j,i] <- phi
   }
 }
