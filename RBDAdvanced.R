@@ -82,12 +82,17 @@ EitherOrTable <- matrix(0, nrow = 223, ncol = 223)
 pb <- progress_bar$new(total = length(sequences1))
 pb$tick(0)
 baseline <- rep(0, length(spikeseq))
+count <- 0
 for (s in 1:length(sequences1)){
   sequence <- sequences1[[s]]
   if (any(is.na(sequence))) {next}
+  count <- count + 1
   pb$tick()
   muts <- c()
   for (pos in 1:length(sequence)) {
+    if (sequence[pos] =="X") {
+      next
+    }
     if (sequence[pos] != spikeseq[pos]){
       muts <- append(muts, pos)
       baseline[pos] <- baseline[pos]+1
@@ -119,12 +124,12 @@ for (i in 1:nrow(CorrelationTable)) {
     if (i==j) {next}
     i_on <- baseline[i]
     j_on <- baseline[j]
-    i_off <- 200000 - i_on
-    j_off <- 200000 - j_on
+    i_off <- count - i_on
+    j_off <- count - j_on
     both_on <- CorrelationTable[i,j]
-    both_off <- 200000 - both_on
     i_on_j_off <- EitherOrTable[j,i]
     j_on_i_off <- EitherOrTable[i,j]
+    both_off <- count - (both_on + i_on_j_off +j_on_i_off)
     phi <- ((both_on*both_off)-(i_on_j_off*i_on_j_off))/(sqrt(i_on*i_off*j_on*j_off))
     phicoefficients[i,j] <- phicoefficients[j,i] <- phi
   }
@@ -156,9 +161,12 @@ heatmapmaker <- function(matrix, names1, names2) {
        pch = 15, cex = 1.6, ylab = "Locus (AA)", xlab = "Locus (AA)", xaxs = "i", yaxs = "i")
 }
 
+binaryphicoefficients <- phicoefficients > 0.5
+
+
 heatmapmaker(CorrelationTable, 319:541, 319:541)
 heatmapmaker(phicoefficients, 319:541, 319:541)
-
+heatmapmaker(binaryphicoefficients, 319:541, 319:541)
 
 write.csv(CorrelationTable, "prelimcorrelationanalysis.csv")
 
