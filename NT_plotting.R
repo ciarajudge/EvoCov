@@ -48,11 +48,11 @@ initialiseRBD <- function(ylabel, dataset, type) {
     addition2 <- 0
   }
   else if (type == 4) {
-    limit = 100000
+    limit = 2000
     addition1 <- 0
     addition2 <- 0
   }
-  plot(c(1, 1273), c(0, 0), xlim = c(957,1623),ylim = c(0, (limit+addition1)), 
+  plot(c(1, 1273), c(0, 0), xlim = c(1509,1551),ylim = c(0, (limit+addition1)), 
        ylab = ylabel, pch = ".", xlab = "genomic locus", xaxs="i", yaxs="i")
   rect(957, 0, 1623, limit, 
        col = adjustcolor("green", alpha.f = 0.2), border = NA)
@@ -69,22 +69,25 @@ initialiseRBD("Number of Mutations", counts, 1)
 lines(1:length(counts), counts, type = "l")
 
 bases <- c("a","c","t","g","n","-")
+NTtable <- read.csv("nucleotidemutwise.csv", header = F)
 initialiseRBD("Mutation Counts", counts, 4)
 spikeseq <- paste0(readLines("spike_nt.txt"), collapse = "")
+spikeseq <- unlist(str_split(spikeseq, ""))
 spikeseq <- unlist(str_split(spikeseq, ""))
 colors <- c("red", "green", "blue", "orange", "purple", "pink")
 for (pos in 957:1623) {
   x <- pos
   y1 <- 0
-  for (nt in 1:(ncol(NTtable))) {
+  for (nt in 1:4) {
     color <- colors[nt]
     y2 <- y1 + NTtable[pos, nt]
-    lines(c(x,x), c(y1, y2), col = color, lwd = 2, lend = 1)
+    lines(c(x,x), c(y1, y2), col = color, lwd = 10, lend = 1)
     y1 <- y2 +1
   }
-  text(x, (y1+1), bases[spikeseq[pos]], cex = 0.5)
+  text(x, (y1+20), spikeseq[pos], cex = 1)
 }
 
+legend(1510, 1500, legend=bases, pch = rep(15, 6), col = colors, horiz = T)
 
 
 
