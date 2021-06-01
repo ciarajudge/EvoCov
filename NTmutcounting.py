@@ -4,13 +4,12 @@ import subprocess
 from Bio import SeqIO
 from tqdm import tqdm
 from operator import add
-import numpy
+import numpy as np
 
 
 filepath = "2021-05-26_unmasked.fa"
 reference = open("spike_nt.txt", "r").readlines()
 reference = list(reference[0].lower())
-print(reference)
 score = [0]*len(reference)
 
 def mutationchecker(num):
@@ -21,7 +20,7 @@ def mutationchecker(num):
             return 1
         else:
             return 0
-
+'''
 with open(filepath, mode = "r") as handle:
     count = 0
     for record in tqdm(SeqIO.parse(handle, 'fasta')):
@@ -33,14 +32,14 @@ with open(filepath, mode = "r") as handle:
             count += 1
         except:
             continue
-"""
+
         if count > 10:
             outfile = open("nt_counts.txt", "w")
             for x in score:
                 outfile.write(str(x) + "\n")
             outfile.close()
             break
-"""            
+           
 
 print(count)
 
@@ -48,4 +47,37 @@ outfile = open("nt_counts.txt", "w")
 for x in score:
     outfile.write(str(x) + "\n")
 outfile.close()
+'''
+print(len(reference))
+bases = ["a","c","t","g","n","-"]
+otherbases = []
+posmutmatrix = np.zeros((len(reference), 6))
+with open(filepath, mode = "r") as handle:
+    count = 0
+    for record in tqdm(SeqIO.parse(handle, 'fasta')):
+        sequence = list(record.seq)
+        sequence = sequence[21562:25384]
+        for nt in range((len(sequence)-1)):
+            if sequence[nt] != reference[nt]:
+                if sequence[nt] in bases:
+                    row = nt
+                    col = bases.index(sequence[nt])
+                    posmutmatrix[row,col] = posmutmatrix[row,col] + 1
+                else:
+                    if sequence[nt] in otherbases:
+                        continue
+                    else:
+                        otherbases.append(sequence[nt])
+        count += 1
+        '''
+        if count > 1000:
+            print(otherbases)
+            np.savetxt("foo.csv", posmutmatrix, delimiter=",")
+            sys.exit()
+        '''
+
+print(otherbases)
+np.savetxt("nucleotidemutwise.csv", posmutmatrix, delimiter=",")
+
+
 
