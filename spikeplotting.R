@@ -146,3 +146,21 @@ for(x in seq(319,541)){
 gradientLegend(valRange = round(c(min(frequencies[319:541]), max(frequencies[319:541])),3),
                color = "heat", nCol = numcols, side = 3, pos=c(485, 9, 538, 10), coords = TRUE,
                border.col = NULL, tick.col = "white", fit.margin = TRUE)
+
+counts2019 <- as.numeric(readLines("2019counts.txt"))
+counts2020 <- as.numeric(readLines("2020counts.txt"))
+counts2021 <- as.numeric(readLines("2021counts.txt"))
+frequencies2019 <- counts2019 /24
+frequencies2020 <- counts2020 / 522424
+frequencies2021 <- counts2021 / 1046613
+
+initialisespike("Frequency mutated", frequencies2021, 2)
+points(1:length(counts2019), frequencies2019, col = "red")
+points(1:length(counts2020), frequencies2020, col = "blue")
+points(1:length(counts2020), frequencies2021, col = "green")
+
+initialisespike("Frequency mutated", frequencies2021, 2)
+lines(1:length(counts2019), frequencies2019, col = "red")
+lines(1:length(counts2020), frequencies2020, col = "blue")
+lines(1:length(counts2020), frequencies2021, col = "green")
+

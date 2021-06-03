@@ -20,6 +20,10 @@ def mutationchecker(num):
             return 1
         else:
             return 0
+
+meta = np.genfromtxt('metadata.csv',delimiter=',',skiprows=1)
+print(meta[1,3])
+
 '''
 with open(filepath, mode = "r") as handle:
     count = 0
@@ -47,7 +51,7 @@ outfile = open("nt_counts.txt", "w")
 for x in score:
     outfile.write(str(x) + "\n")
 outfile.close()
-'''
+
 print(len(reference))
 bases = ["a","c","t","g","n","-"]
 otherbases = []
@@ -69,15 +73,15 @@ with open(filepath, mode = "r") as handle:
                     else:
                         otherbases.append(sequence[nt])
         count += 1
-        '''
+        
         if count > 1000:
             print(otherbases)
             np.savetxt("foo.csv", posmutmatrix, delimiter=",")
             sys.exit()
-        '''
+       
 
 print(otherbases)
 np.savetxt("nucleotidemutwise.csv", posmutmatrix, delimiter=",")
-
+'''
 
 

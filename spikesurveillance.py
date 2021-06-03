@@ -44,6 +44,7 @@ for l in spikeseq:
     spike = spike + l.replace("\n", "")
 spikeseq = list(spike)
 
+"""
 ######Read in Gisaid Sequences#####
 print("Parsing Spike Sequences from GISAID")
 sequencefile = open(sys.argv[1], "r").readlines()
@@ -79,7 +80,7 @@ for x in labels:
     outfile.write(str(x) + "\n")
 outfile.close()
 #numpy.save('sequencedict.npy', metaandseqdict) 
-
+"""
 #####Read in Sequence Dict#####
 """
 print("Reading in Sequence Dictionary")
@@ -145,7 +146,65 @@ for sequence in tqdm(sequences):
 """
 
 
+#####Temporal Analysis#####
+sequences = open("correctsequences.txt", "r").readlines()
 
+infile = open("correctlabels.txt", "r")
+labels = []
+for line in infile:
+        if line.strip():
+                labels.append(line)
+        else:
+                continue
+
+dates = [i.split("|")[2] for i in labels]
+years = [i.split("-")[0] for i in dates]
+
+
+_2019score = [0]*len(spikeseq)
+_2020score = [0]*len(spikeseq)
+_2021score = [0]*len(spikeseq)
+_2019count = 0
+_2020count = 0
+_2021count = 0
+count = -1
+for sequence in tqdm(sequences):
+    count += 1
+    sequence = sequence.replace("['", "").replace("', '","").replace("']","")
+    try:
+        newlist = list(map(mutationchecker, range(0,(len(spikeseq)-1))))
+        if years[count] == '2019':
+            _2019score = list(map(add, _2019score, newlist))
+            _2019count += 1
+        elif years[count] == '2020':
+            _2020score = list(map(add, _2020score, newlist))
+            _2020count += 1
+        else:
+            _2021score = list(map(add, _2021score, newlist))
+            _2021count += 1
+    except:
+        continue
+
+
+outfile = open("2019counts.txt", "w")
+for x in _2019score:
+    outfile.write(str(x) + "\n")
+outfile.close()
+
+outfile = open("2020counts.txt", "w")
+for x in _2020score:
+    outfile.write(str(x) + "\n")
+outfile.close()
+
+outfile = open("2021counts.txt", "w")
+for x in _2021score:
+    outfile.write(str(x) + "\n")
+outfile.close()
+
+print(_2019count)
+print(_2020count)
+print(_2021count)
+sys.exit()
 
 
 
