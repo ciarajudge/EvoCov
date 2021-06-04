@@ -7,8 +7,8 @@ from operator import add
 import numpy as np
 
 
-filepath = "2021-05-26_unmasked.fa"
-reference = open("spike_nt.txt", "r").readlines()
+filepath = "Data/2021-05-26_unmasked.fa"
+reference = open("Data/spike_NT.txt", "r").readlines()
 reference = list(reference[0].lower())
 accessions = open("accessions.txt", "r").read().splitlines()
 dates = open("quarters.txt", "r").read().splitlines()
