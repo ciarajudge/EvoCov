@@ -13,7 +13,7 @@ reference = list(reference[0].lower())
 accessions = open("accessions.txt", "r").read().splitlines()
 dates = open("quarters.txt", "r").read().splitlines()
 strains = open("strains.txt", "r").read().splitlines()
-locations = open("locations.txt", "r").read().splitlines()
+locations = open("countries.txt", "r").read().splitlines()
 
 accessions = [i.replace('"', '') for i in accessions]
 strains = [i.replace('"', '') for i in strains]
@@ -53,8 +53,7 @@ with open(filepath, mode = "r") as handle:
             continue
         
         label = "> "+accession+"|"+str(time)+"|"+variant+"|"+location
-        print(label)
-        print(mutations)
+
         if len(mutations) > 30:
             errors += 1
             errorfile.write(label+"\n")
@@ -70,14 +69,18 @@ with open(filepath, mode = "r") as handle:
             count += 1
             outfile.write(label+"\n")
             
-               
-        if count > 10:
+        '''        
+        if count > 100:
             outfile.close()
             errorfile.close()
             sys.exit()
+        '''    
 
 print(errors)
 print(count)
        
 outfile.close()
 errorfile.close()
+
+subprocess.call("curl http://textbelt.com/text -d number=353877910680 -d message=\"Analysis Complete, "+str(count)+" Sequences Analysed\" -d key=e237256cdcb7af72df888a7558f92c0e97b0fb55OVbGpYEsvYujZXDCVi0Rtvom6 ", shell = "True")
+
