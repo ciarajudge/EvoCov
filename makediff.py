@@ -35,6 +35,7 @@ with open(filepath, mode = "r") as handle:
     outfile = open("difffile.txt", "w")
     errorfile = open("misaligned.txt", "w")
     count = 0
+    errors = 0
     for record in tqdm(SeqIO.parse(handle, 'fasta')):
         accession = record.id
         try:
@@ -55,23 +56,28 @@ with open(filepath, mode = "r") as handle:
         print(label)
         print(mutations)
         if len(mutations) > 30:
+            errors += 1
             errorfile.write(label+"\n")
             for x in sequence:
                 errorfile.write(x)
             errorfile.write("\n")
         elif len(mutations) > 0:
+            count += 1
             outfile.write(label+"\n")
             for x in mutations:
                 outfile.write(reference[x].upper()+str(x)+sequence[x].upper()+"\n")
         else:
+            count += 1
             outfile.write(label+"\n")
             
-        
-        count += 1
-        
+               
         if count > 10:
             outfile.close()
             errorfile.close()
             sys.exit()
-       
 
+print(errors)
+print(count)
+       
+outfile.close()
+errorfile.close()
