@@ -42,7 +42,7 @@ with open(filepath, mode = "r") as handle:
             index = accessions.index(str(accession))
         except ValueError:
             continue
-        time = int(dates[index])
+        time = dates[index]
         variant = strains[index]
         location = locations[index]
         sequence = list(record.seq)
