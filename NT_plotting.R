@@ -61,9 +61,14 @@ initialiseRBD <- function(ylabel, dataset, type) {
 
 
 counts <- as.numeric(readLines("Analysis/counts_NT.txt"))
+frequencies <- counts/902551
+
 
 initialisespike("Number of Mutations", counts, 1)
 lines(1:length(counts), counts, type = "l")
+
+initialisespike("Frequencies", frequencies, 2)
+lines(1:length(frequencies), frequencies, type = "l")
 
 initialiseRBD("Number of Mutations", counts, 1)
 lines(1:length(counts), counts, type = "l")

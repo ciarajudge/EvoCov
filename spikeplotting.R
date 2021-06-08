@@ -113,7 +113,7 @@ addmutations <- function(b117, b1351, p1, b1427, b1429) {
   }
 }
 
-counts <- as.numeric(readLines("fixedcounts.txt"))
+counts <- as.numeric(readLines("Analysis/counts_AA.txt"))
 plot(1:length(counts), counts, type = "l")
 
 initialisespike("Number of Mutations", counts, 1)
