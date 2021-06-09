@@ -71,20 +71,24 @@ def NTmuttoAA(desc):
 
 
 
-NTdifffile = open("difffile.txt", "r").readlines()
+NTdifffile = open("Data/difffile.txt", "r").readlines()
 AAdiffile = open("AAdiffile.txt", "w")
 count = 0
 for line in tqdm(NTdifffile):
     if list(line)[0] == ">":
         count += 1
         AAdiffile.write(line)
+        posns = []
     else:
-        AAmut = NTmuttoAA(line)
-        if AAmut != "NA":
-            AAdiffile.write(AAmut+"\n")
+        pos = math.ceil(int(line[1:-2])/3)
+        if pos not in posns:
+            AAmut = NTmuttoAA(line)
+            if AAmut != "NA":
+                AAdiffile.write(AAmut+"\n")
+            posns.append(pos)
 
 
 print(count)
 
-subprocess.call("curl http://textbelt.com/text -d number=353877910680 -d message=\"Analysis Complete, "+str(count)+" Sequences Parsed\" -d key=e237256cdcb7af72df888a7558f92c0e97b0fb55OVbGpYEsvYujZXDCVi0Rtvom6 ", shell = "True")
+#subprocess.call("curl http://textbelt.com/text -d number=353877910680 -d message=\"Analysis Complete, "+str(count)+" Sequences Parsed\" -d key=e237256cdcb7af72df888a7558f92c0e97b0fb55OVbGpYEsvYujZXDCVi0Rtvom6 ", shell = "True")
 

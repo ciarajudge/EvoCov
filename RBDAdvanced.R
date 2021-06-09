@@ -6,7 +6,7 @@ library(gtools)
 MutationTable <- matrix(0, nrow = 22, ncol = 223)
 
 AAs <- c("A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P",
-         "S", "T", "W", "Y", "V", "X", "*")
+         "S", "T", "W", "Y", "V", "X", "*", "_")
 
 admut <- function(pos, seq, MutationTable) {
   AAs <- c("A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P",

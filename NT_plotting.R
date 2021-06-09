@@ -64,6 +64,7 @@ counts <- as.numeric(readLines("Analysis/counts_NT.txt"))
 frequencies <- counts/902551
 
 
+
 initialisespike("Number of Mutations", counts, 1)
 lines(1:length(counts), counts, type = "l")
 
@@ -94,7 +95,14 @@ for (pos in 957:1623) {
 
 legend(1510, 1500, legend=bases, pch = rep(15, 6), col = colors, horiz = T)
 
+counts <- as.numeric(readLines("Analysis/counts_NT.txt"))
+frequencies <- counts/902551
+frequencies[frequencies>0.001] = 0.001
+plot(density(frequencies), log = "y")
 
+hist(frequencies, breaks = 1000, ylim = c(0, 60))
+abline(v=0.008, col = "red")
 
-
-
+errors <- frequencies[frequencies<0.008]
+mean(errors)
+var(errors)

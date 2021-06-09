@@ -119,7 +119,7 @@ plot(1:length(counts), counts, type = "l")
 initialisespike("Number of Mutations", counts, 1)
 lines(1:length(counts), counts, type = "l")
 
-frequencies <- counts/1600000
+frequencies <- counts/902551
 initialisespike("Frequency mutated", frequencies, 2)
 lines(1:length(counts), frequencies, type = "l")
 addmutations(1,1,1,1,1)
@@ -163,4 +163,36 @@ initialisespike("Frequency mutated", frequencies2021, 2)
 lines(1:length(counts2019), frequencies2019, col = "red")
 lines(1:length(counts2020), frequencies2020, col = "blue")
 lines(1:length(counts2020), frequencies2021, col = "green")
+
+#############################################
+##### Plotting by position and mutation #####
+#############################################
+AAs <- c("A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P",
+         "S", "T", "W", "Y", "V", "X", "*", "_")
+qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
+col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+colors <- sample(col_vector, length(AAs), replace = F)
+
+initialiseRBD("Mutation Counts", counts, 4)
+spikeseq <- paste0(readLines("spike.txt"), collapse = "")
+spikeseq <- unlist(str_split(spikeseq, ""))
+spikeseq <- spikeseq[319:541]
+spikeseq <- match(spikeseq, AAs)
+for (pos in 1:ncol(MutationTable)) {
+  x <- pos + 318
+  y1 <- 0
+  for (AA in 1:(nrow(MutationTable)-1)) {
+    if (AA == spikeseq[pos]) {
+      next
+    }
+    color <- colors[AA]
+    y2 <- y1 + MutationTable[AA, pos]
+    lines(c(x,x), c(y1, y2), col = color, lwd = 6, lend = 1)
+    y1 <- y2 +1
+  }
+  text(x, (y1+1), AAs[spikeseq[pos]], cex = 0.5)
+}
+
+
+
 
