@@ -38,7 +38,7 @@ initialiseRBD <- function(ylabel, dataset, type) {
     addition2 <- 0
   }
   else if (type == 2) {
-    limit = max(dataset[319:541])+0.05
+    limit = max(dataset[957:1623])+0.05
     addition1 <- 0
     addition2 <- 0
   }
@@ -52,7 +52,7 @@ initialiseRBD <- function(ylabel, dataset, type) {
     addition1 <- 0
     addition2 <- 0
   }
-  plot(c(1, 1273), c(0, 0), xlim = c(1509,1551),ylim = c(0, (limit+addition1)), 
+  plot(c(1, 1273), c(0, 0), xlim = c(1500,1560),ylim = c(0, 0.002), 
        ylab = ylabel, pch = ".", xlab = "genomic locus", xaxs="i", yaxs="i")
   rect(957, 0, 1623, limit, 
        col = adjustcolor("green", alpha.f = 0.2), border = NA)
