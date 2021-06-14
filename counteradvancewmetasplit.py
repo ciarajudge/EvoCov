@@ -35,7 +35,7 @@ for line in tqdm(infile):
     if list(line)[0] == ">":
         posns = []
         factor = line.split("|")[m].split("\n")[0]
-        if factor in targets:
+        if any(target == factor for target in targets):
             count += 1
             counting = True
             z = targets.index(factor)
@@ -62,6 +62,7 @@ for line in tqdm(infile):
 
 print(count)
 print(otherbases)
+print(targetcounts)
 if not os.path.isdir("Analysis/"+meta):
     os.makedirs("Analysis/"+meta)
 for x in range(0, len(targets)):
