@@ -45,4 +45,3 @@ for line in tqdm(infile):
 print(count)
 print(otherbases)
 np.savetxt(outfile, posmutmatrix, delimiter=",")
-
