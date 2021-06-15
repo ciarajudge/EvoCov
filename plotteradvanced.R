@@ -213,11 +213,20 @@ initialisespike("Frequency Mutated", B117counts, 2)
 points(1:length(P1counts), B117counts, col = "darkorchid")
 points(1:length(P1counts), B1351counts, col = "navy")
 points(1:length(P1counts), P1counts, col = "red")
-points(1:length(P1counts), B1427counts, col = "darkslateblue")
+points(1:length(P1counts), B1427counts, col = "cyan2")
 points(1:length(P1counts), B1429counts, col = "darkolivegreen")
 points(1:length(P1counts), B16172counts, col = "darkorange")
 legend("top", inset = c(0, -0.2),legend=c("B.1.1.7", "B.1.351","P.1", "B.1.427","B.1.429","B.1.617.2"), 
-       pch = 1, col = c("darkorchid", "navy", "red","darkslateblue", "darkolivegreen", "darkorange"),xpd = TRUE, horiz = TRUE)
+       pch = 1, col = c("darkorchid", "navy", "red","cyan2", "darkolivegreen", "darkorange"),xpd = TRUE, horiz = TRUE)
 
+initialisespike("Frequency Mutated", B117counts, 2)
+points(1:length(P1counts), B117[,5], col = "darkorchid")
+points(1:length(P1counts), B1351[,5], col = "navy")
+points(1:length(P1counts), P1[,5], col = "red")
+points(1:length(P1counts), B1427[,5], col = "darkslateblue")
+points(1:length(P1counts), B1429[,5], col = "darkolivegreen")
+points(1:length(P1counts), B16172[,5], col = "darkorange")
+legend("top", inset = c(0, -0.2),legend=c("B.1.1.7", "B.1.351","P.1", "B.1.427","B.1.429","B.1.617.2"), 
+       pch = 1, col = c("darkorchid", "navy", "red","darkslateblue", "darkolivegreen", "darkorange"),xpd = TRUE, horiz = TRUE)
 
 
