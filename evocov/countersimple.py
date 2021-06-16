@@ -1,6 +1,12 @@
+import sys
+import os
+import numpy as np
+import csv
+import math
+from tqdm import tqdm
 
 def simplecounter(form, infile, outfile):
-    infile = open(infile, "r").readlines()
+    infile = open("Data/"+infile, "r").readlines()
     if form == "NT" :
         reference = open("Data/spike_NT.txt", "r").readlines()
         reference = list(reference[0].lower())

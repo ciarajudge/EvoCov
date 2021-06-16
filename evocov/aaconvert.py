@@ -3,8 +3,8 @@ import os
 import numpy as np
 import csv
 import math
-
 from tqdm import tqdm
+
 def aaconvert(infile, outfile):
     reference = open("Data/spike_NT.txt", "r").readlines()
     reference = list(reference[0].upper())
