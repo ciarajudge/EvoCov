@@ -25,7 +25,7 @@ complete = set(complete)
 
 
 print("\n Already completed sequences catalogued, GISAID Fasta will now be parsed.")
-seqparser(fasta, metadata, outfile, complete)
+#seqparser(fasta, metadata, outfile, complete)
 
 AAfile = input("\n Please enter the name desired for the Amino Acid version of the diff file.\n")
 aaconvert(outfile, AAfile)
