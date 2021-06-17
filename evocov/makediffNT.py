@@ -29,6 +29,7 @@ def seqparser(filepath, metadata, otfile, complete):
         for record in tqdm(SeqIO.parse(handle, 'fasta')):
             accession = record.id
             if accession in complete:
+                count += 1
                 continue       
             try:
                 meta = dictionary[accession]
@@ -66,7 +67,7 @@ def seqparser(filepath, metadata, otfile, complete):
        
     outfile.close()
     errorfile.close()
-
+    return count
 
     #subprocess.call("curl http://textbelt.com/text -d number=353877910680 -d message=\"Analysis Complete, "+str(added)+" Sequences Added\" -d key=e237256cdcb7af72df888a7558f92c0e97b0fb55OVbGpYEsvYujZXDCVi0Rtvom6 ", shell = "True")
 

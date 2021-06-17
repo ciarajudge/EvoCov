@@ -3,6 +3,11 @@ library(dplyr)
 library(tidyverse)
 library(RColorBrewer)
 
+n <- 22
+qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
+col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+colors <- sample(col_vector, 22, replace = F)
+
 initialisespikeNT <- function(ylabel, type) {
   if (type == 1) {
     ylimit = 1.1
@@ -47,42 +52,68 @@ initialisespikeAA <- function(ylabel, dataset, type) {
   text(70, (limit+addition2), "S1 Subunit")
   text(600, (limit+addition2), "S2 Subunit")
 }
-initialiseRBDAA <- function(ylabel, dataset, type) {
-  if (type == 1) {
-    limit = max(dataset)
-    addition1 <- 70000
-    addition2 <- 30000
-  }
-  else if (type == 2) {
-    limit = max(dataset[319:541])+0.05
-    addition1 <- 0
-    addition2 <- 0
-  }
-  else if (type == 3) {
-    limit = max(dataset[319:541])+1
-    addition1 <- 0
-    addition2 <- 0
-  }
-  else if (type == 4) {
-    limit = 10000
-    addition1 <- 0
-    addition2 <- 0
-  }
-  plot(c(1, 1273), c(0, 0), xlim = c(319,541),ylim = c(0, (limit+addition1)), 
+initialiseRBDAA <- function(ylabel, ylimit) {
+  plot(c(1, 1273), c(0, 0), xlim = c(319,541),ylim = c(0, ylimit), 
        ylab = ylabel, pch = ".", xlab = "locus (by codon)", xaxs="i", yaxs="i")
-  rect(13, 0, 304, limit, 
-       col = adjustcolor("red", alpha.f = 0.2), border = NA)
-  rect(319, 0, 541, limit, 
+  rect(319, 0, 541, ylimit, 
        col = adjustcolor("green", alpha.f = 0.2), border = NA)
-  rect(543, 0, 1208, limit, 
-       col = adjustcolor("blue", alpha.f = 0.2), border = NA)
 }
+stackedbarAA <- function(MutationTable, reference, counts) {
+  AAs <- c("A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P",
+           "S", "T", "W", "Y", "V", "X", "*", "_")
+  spikeseq <- paste0(readLines(reference), collapse = "")
+  spikeseq <- unlist(str_split(spikeseq, ""))
+  spikeseq <- match(spikeseq, AAs)
+  for (pos in 300:600) {
+    x <- pos-1
+    y1 <- 0
+    for (AA in 1:20) {
+      color <- colors[AA]
+      y2 <- y1 + MutationTable[pos, AA]
+      lines(c(x,x), c(y1, y2), col = color, lwd = 3, lend = 1)
+      y1 <- y2
+    }
+    if (counts[pos] > 0){
+      text(x, (y1+0.01), AAs[spikeseq[x]], cex = 0.4)
+    }
+  }
+  legend("top", inset = c(0, -0.2),legend=AAs[1:20], pch = 15, col = colors[1:20],
+         xpd = TRUE, horiz = T)
+  
+
+}
+stackedbarAA2 <- function(MutationTable, reference, counts) {
+  AAs <- c("A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P",
+           "S", "T", "W", "Y", "V", "X", "*", "_")
+  spikeseq <- paste0(readLines(reference), collapse = "")
+  spikeseq <- unlist(str_split(spikeseq, ""))
+  spikeseq <- match(spikeseq, AAs)
+  for (pos in 300:600) {
+    x <- pos-1
+    y1 <- 0
+    for (AA in 1:20) {
+      color <- colors[AA]
+      y2 <- y1 + MutationTable[pos, AA]
+      lines(c(x,x), c(y1, y2), col = color, lwd = 3, lend = 1)
+      y1 <- y2
+    }
+    if (counts[pos] > 0){
+      text(x, (y1+0.001), AAs[spikeseq[x]], cex = 0.5)
+    }
+  }
+  
+  
+}
+
 
 args <- commandArgs(trailingOnly=TRUE)
 nttable <- read.csv(args[1], header = F)
 ntnons <- cbind(nttable[,1:4], nttable[,6])
 ntcounts <- rowSums(nttable)
 ntcountsnons <- rowSums(ntnons)
+aatable <- read.csv(args[3], header = F)
+aacounts <- rowSums(aatable)
+
 
 checkamplicons <- function(Ns){
   ampstarts <- c()
@@ -95,6 +126,7 @@ checkamplicons <- function(Ns){
 }
 
 pdf(file = "results.pdf", paper = "a4", width = 7, height = 10.5)
+##Page 1
 layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 8), ncol = 1), heights = c(1,0.6,0.5,1,4,1, 4, 3))
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
@@ -129,3 +161,32 @@ par(mar=c(4.5, 4.5, 1, 1))
 initialiseRBDNT("Frequency Mutated")
 lines(1:length(ntcountsnons), ntcountsnons)
 
+##Page 2
+layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 8), ncol = 1), heights = c(1,2,5,5, 2, 2))
+par(mar=c(0,0,0,0))
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+text(1,0.8,"Mutant Codon Frequency at Each Locus", cex = 2)
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+text(1,1, paste0(c("For each codon position in the RBD, a stacked bar is used to show the frequencies at that locus of codons that 
+     differ from the reference. Due to the heavily prevalent N501Y mutation (", colors[19], ") the information in this plot is
+                   difficult to view, so a zoomed in version is also provided."), collapse = ""))
+
+par(mar=c(4.5, 4.5, 3, 1))
+initialiseRBDAA("Frequency Mutated",  (max(aacounts[319:541])+0.05))
+stackedbarAA(aatable, "Data/spike_AA.txt", aacounts)
+
+par(mar=c(4.5, 4.5, 3, 1))
+initialiseRBDAA("Frequency Mutated",  0.05)
+stackedbarAA2(aatable, "Data/spike_AA.txt", aacounts)
+
+par(mar=c(0,0,0,0))
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+text(1,1, "This information is also available for the genomic sequence rather than codon-wise, but is too wide to fit nicely into 
+this PDF. For that reason, it has been saved separately in the 'Plots' folder. The information shown in these plots will be used
+     later in epitope scoring during the calculation of shannon entropies for each locus, and when the suggested epitope is selected,
+     a zoomed in version of this plot for the epitope in question will be presented once more.")
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+
+##Page 3
