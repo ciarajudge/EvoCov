@@ -42,5 +42,5 @@ def simplecounter(form, infile, outfile):
     print(count)
     print(otherbases)
     np.savetxt(outfile, (posmutmatrix/count), delimiter=",")
-    return(count)
+    return(posmutmatrix/count)
 

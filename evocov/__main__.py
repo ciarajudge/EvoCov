@@ -7,6 +7,8 @@ from evocov.makediffNT import seqparser
 from evocov.aaconvert import aaconvert
 from evocov.countersimple import simplecounter
 from evocov.metasplitcounter import metasplitcounter
+from evocov.scoring import scoring
+from evocov.scoring import entropy
 from tqdm import tqdm
 import json
 import wget
@@ -14,7 +16,7 @@ import requests
 import pdfkit
 import datetime
 import subprocess
-
+from itertools import repeat
 
 #Initialise
 if len(sys.argv) > 1:
@@ -88,11 +90,18 @@ else:
 if not os.path.isdir("Analysis"):
     os.makedirs("Analysis")
 print("The pipeline will now proceed with counting and analysis and return representations of the mutational landscape and recommended epitope candidates.")
-numsequences = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
-simplecounter("AA", AAfile, "Analysis/simplecountsAA.csv")
-varcounts = metasplitcounter("AA", AAfile, "variant", ["B.1.1.7", "B.1.351", "B.1.427", "B.1.429","P.1", "B.1.617.2"])
+NTtable = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
+#simplecounter("AA", AAfile, "Analysis/simplecountsAA.csv")
+#varcounts = metasplitcounter("AA", AAfile, "variant", ["B.1.1.7", "B.1.351", "B.1.427", "B.1.429","P.1", "B.1.617.2"])
 
 
+#Scoring
+candidates = open("Data/candidates.txt").readlines()
+scores = [scoring(x, NTtable) for x in tqdm(candidates)]
+print(min(scores))
+print(max(scores))
+
+'''
 #Download current case data for all countries and normalise
 print("Retrieving current case data for all countries from the WHO, this will be used to normalise the counts by country.\n")
 wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", ".")
@@ -104,3 +113,29 @@ print("Creating a PDF of the pipeline results")
 subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv variant", shell = True)
 
 subprocess.call("rm WHO*", shell = True)
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
