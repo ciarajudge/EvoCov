@@ -101,6 +101,6 @@ wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", ".")
 if not os.path.isdir("Plots"):
     os.makedirs("Plots")
 print("Creating a PDF of the pipeline results")
-subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv", shell = True)
+subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv variant", shell = True)
 
 subprocess.call("rm WHO*", shell = True)

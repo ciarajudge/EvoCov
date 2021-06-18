@@ -65,8 +65,7 @@ def metasplitcounter(form, infile, meta, targets):
         os.makedirs("Analysis/"+meta)
     for x in range(0, len(targets)):
         if targetcounts[x] != 0:
-            np.savetxt("Analysis/"+meta+"/"+targets[x]+".csv", posmutmatrix[:,:,x], delimiter=",")
-            np.savetxt("Analysis/"+meta+"/"+targets[x]+"frequencies.csv", (posmutmatrix[:,:,x]/targetcounts[x]), delimiter=",")
+            np.savetxt("Analysis/"+meta+"/"+targets[x]+"_"+targetcounts[x]+".csv", (posmutmatrix[:,:,x]/targetcounts[x]), delimiter=",")
         else:
             print("No sequences found for "+meta+" "+targets[x])
     return(targetcounts)
