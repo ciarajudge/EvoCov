@@ -1,2 +1,2 @@
-# SARSCov2_Evolution
-Repository for masters thesis on SARS-CoV-2 evolution and antibody design
+# EvoCov
+This is EvoCov, a pipeline designed for analysis of SARS-CoV-2 sequences from GISAID.
