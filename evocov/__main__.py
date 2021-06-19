@@ -91,10 +91,22 @@ else:
 #Counting
 if not os.path.isdir("Analysis"):
     os.makedirs("Analysis")
-print("The pipeline will now proceed with counting and analysis and return representations of the mutational landscape and recommended epitope candidates.")
+print("The pipeline will now proceed with counting and analysis of the mutational landscape of the SARS-CoV-2 Genome.")
 NTtable = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
-#simplecounter("AA", AAfile, "Analysis/simplecountsAA.csv")
-#varcounts = metasplitcounter("AA", AAfile, "variant", ["B.1.1.7", "B.1.351", "B.1.427", "B.1.429","P.1", "B.1.617.2"])
+numsequences = simplecounter("AA", AAfile, "Analysis/simplecountsAA.csv")
+
+
+if default == True:
+    print("Because you are running on default, the variants used for this analysis will be those classified as VOC: B.1.1.7, B.1.351, B.1.427, B.1.429, P.1, B.1.617.2")
+    varguments = ["B.1.1.7", "B.1.351", "B.1.427", "B.1.429","P.1", "B.1.617.2"]
+else:
+    var = input("Please enter the names of the variants you wish to use in this analysis separated by spaces. If you wish to proceed with the default variants (B.1.1.7, B.1.351, B.1.427, B.1.429, P.1, B.1.617.2), just press enter")
+    if input == "":
+        varguments = ["B.1.1.7", "B.1.351", "B.1.427", "B.1.429","P.1", "B.1.617.2"]
+    else:
+        varguments = var.split(" ")
+        
+vartables = metasplitcounter("AA", AAfile, "variant", varguments)
 
 
 #Scoring
@@ -104,13 +116,8 @@ for x in tqdm(candidates):
     score = scoring(x, NTtable)
     if score != "NA":
         scores.append(score)
-with open("scoredepitopes.csv", "w", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerows(scores)
-
 sortedscores = sorted(scores, key = itemgetter(7))
-
-with open("sortedscoredepitopes.csv", "w", newline="") as f:
+with open("Analysis/scoredepitopes.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(sortedscores)
     
@@ -123,7 +130,7 @@ wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", ".")
 if not os.path.isdir("Plots"):
     os.makedirs("Plots")
 print("Creating a PDF of the pipeline results")
-subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv variant", shell = True)
+subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv", shell = True)
 
 subprocess.call("rm WHO*", shell = True)
 '''
