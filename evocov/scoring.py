@@ -7,7 +7,7 @@ from tqdm import tqdm
 from statistics import mean
 
 
-def entropy(AA, NTtable):
+def entropy(AA, NTtable, VarTables):
     e = []
     for nt in range(AA*3, (AA*3)+4):
         total = NTtable[nt,0]+NTtable[nt,1]+NTtable[nt,2]+NTtable[nt,3]+NTtable[nt,5]
@@ -44,13 +44,13 @@ def entropy(AA, NTtable):
 
 def scoring(candidate, NTtable):
     AAscores = {
-    "A":  67.0, "C":  86.0, "D":  91.0,
-    "E": 109.0, "F": 135.0, "G":  48.0,
-    "H": 118.0, "I": 124.0, "K": 135.0,
-    "L": 124.0, "M": 124.0, "N":  96.0,
-    "P":  90.0, "Q": 114.0, "R": 148.0,
-    "S":  73.0, "T":  93.0, "V": 105.0,
-    "W": 163.0, "Y": 141.0,
+    "A":  5.0, "C":  7.0, "D":  10.0,
+    "E": 10.0, "F": 5.0, "G":  5.0,
+    "H": 10.0, "I": 5.0, "K": 10.0,
+    "L": 5.0, "M": 5.0, "N":  8.0,
+    "P":  7.0, "Q": 8.0, "R": 10.0,
+    "S":  8.0, "T":  8.0, "V": 5.0,
+    "W": 5.0, "Y": 5.0,
     }
     reference = open("Data/spike_AA.txt", "r").readlines()
     reference = list(reference[0])
@@ -60,45 +60,55 @@ def scoring(candidate, NTtable):
     for i in indexs:
         indexes.append(int(i))
         AAs.append(reference[int(i)])
+    if len(AAs)<5:
+        return "NA"
     
     #Distance
     distance = float(candidate.split("_")[1].strip("\n"))
-    distancescore = 10*((15-distance)/15)
-    #print(distancescore)
+    distancescore = 5*((15-distance)/15)
+    
     #Length
     if len(indexes)>10:
         lenscore = 10
     else:
         lenscore = len(indexes)
-    #print(lenscore)
+        
     #AA Score
     AAscore = []
     for x in AAs:
         AAscore.append(AAscores[x])
-    AAscore = (mean(AAscore)/170)*10
-    #print(AAscore)
-    #RBD
+    AAscore = (mean(AAscore)/10)*5
+    
+    #Location
     inRBD = 0
     for x in indexes:
         if x in range(318, 541):
             inRBD += 1
     inRBD = inRBD/len(indexes)
-    RBDscore = 10*inRBD
-    #print(RBDscore)
-    
+    RBDscore = 3*inRBD
+    inS1 = 0
+    for x in indexes:
+        if x in range(0, 541):
+            inS1 += 1
+    inS1 = inS1/len(indexes)
+    S1score = 7*inS1
+    locationscore = S1score+RBDscore
+
     #Entropy
     entropies = []
     for x in indexes:
         entropies.append(entropy(x, NTtable))
     entropies = mean(entropies)
     entropyscore = 60 - (60*entropies)
-    #print(entropyscore)          
+              
+    #UniformEntropy
 
-    totalscore = distancescore+lenscore+AAscore+RBDscore+entropyscore
+
+    totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore
 
     if totalscore > 50:
         AAs = "".join(AAs)
-        finallist = [AAs, indexes, distancescore, lenscore, AAscore, RBDscore, entropyscore, totalscore]
+        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, totalscore]
         return finallist
     else:
         return "NA"

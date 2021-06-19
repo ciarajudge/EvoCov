@@ -52,7 +52,7 @@ else:
 if os.path.isfile("Data/"+NTfile):
     if default == True:
         repeat = "skip"
-        print("\nWe have detected an existing diff file, so this step will be skipped!\n")
+        print("\nWe have detected an existing NT diff file, so this step will be skipped!\n")
     else:
         repeat = input("\nThere is already a file with that name! Would you like to skip this step of the pipeline, completely rebuild this file from scratch, or update the file with any new sequences?(skip/scratch/update)\n")
     if repeat == "update":
@@ -121,7 +121,7 @@ with open("Analysis/scoredepitopes.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(sortedscores)
     
-'''
+
 #Download current case data for all countries and normalise
 print("Retrieving current case data for all countries from the WHO, this will be used to normalise the counts by country.\n")
 wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", ".")
@@ -133,7 +133,7 @@ print("Creating a PDF of the pipeline results")
 subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv", shell = True)
 
 subprocess.call("rm WHO*", shell = True)
-'''
+
 
 
 
