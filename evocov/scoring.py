@@ -95,4 +95,11 @@ def scoring(candidate, NTtable):
     #print(entropyscore)          
 
     totalscore = distancescore+lenscore+AAscore+RBDscore+entropyscore
-    #print(totalscore)
+
+    if totalscore > 50:
+        AAs = "".join(AAs)
+        finallist = [AAs, indexes, distancescore, lenscore, AAscore, RBDscore, entropyscore, totalscore]
+        return finallist
+    else:
+        return "NA"
+

@@ -17,6 +17,8 @@ import pdfkit
 import datetime
 import subprocess
 from itertools import repeat
+import operator
+from operator import itemgetter
 
 #Initialise
 if len(sys.argv) > 1:
@@ -97,10 +99,21 @@ NTtable = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
 
 #Scoring
 candidates = open("Data/candidates.txt").readlines()
-scores = [scoring(x, NTtable) for x in tqdm(candidates)]
-print(min(scores))
-print(max(scores))
+scores = []
+for x in tqdm(candidates):
+    score = scoring(x, NTtable)
+    if score != "NA":
+        scores.append(score)
+with open("scoredepitopes.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerows(scores)
 
+sortedscores = sorted(scores, key = itemgetter(7))
+
+with open("sortedscoredepitopes.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerows(sortedscores)
+    
 '''
 #Download current case data for all countries and normalise
 print("Retrieving current case data for all countries from the WHO, this will be used to normalise the counts by country.\n")
