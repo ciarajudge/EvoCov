@@ -8,21 +8,29 @@ Clone the github repository to your machine to use the EvoCov package. Before us
 git clone https://github.com/ciarajudge/EvoCov.git
 ```
 
-
-## Usage
-
-```python
-import foobar
-
-foobar.pluralize('word') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
+```bash
+pip install -r requirements.txt
 ```
+
+
+## Default Usage
+Navigate to the cloned repository and call the package along with the file paths of your latest GISAID masked sequence file and metadata file. This will initiate a default run of the pipeline, including handling of any exceptions or options. This includes the final step of the pipeline where the results are piped to a PDF using R.
+
+```bash
+python -m evocov /path/to/sequencefile_masked.fa /path/to/metadata.tsv
+```
+
+## Interactive Usage
+Navigate to the cloned repository and call the package using the below command.
+
+```bash
+python -m evocov
+```
+
+Running the pipeline in this manner will create an interactive session where you will be able to select file names for the output, and give the names of the variants you want included in the analysis. Following epitope scoring you will also be given the option to use R to generate an output PDF with the key findings of the pipeline.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
