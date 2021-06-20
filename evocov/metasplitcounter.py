@@ -33,6 +33,8 @@ def metasplitcounter(form, infile, meta, targets):
         if list(line)[0] == ">":
             posns = []
             factor = line.split("|")[m].split("\n")[0]
+            if m == 1:
+                factor = "-".join(factor.split("-")[0:2])
             if any(target == factor for target in targets):
                 count += 1
                 counting = True
@@ -68,4 +70,4 @@ def metasplitcounter(form, infile, meta, targets):
             np.savetxt("Analysis/"+meta+"/"+targets[x]+"_"+str(targetcounts[x])+".csv", (posmutmatrix[:,:,x]/targetcounts[x]), delimiter=",")
         else:
             print("No sequences found for "+meta+" "+targets[x])
-    return(targetcounts)
+    return(posmutmatrix)

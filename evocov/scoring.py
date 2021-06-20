@@ -5,9 +5,10 @@ import csv
 import math
 from tqdm import tqdm
 from statistics import mean
+from statistics import variance
 
 
-def entropy(AA, NTtable, VarTables):
+def entropy(AA, NTtable):
     e = []
     for nt in range(AA*3, (AA*3)+4):
         total = NTtable[nt,0]+NTtable[nt,1]+NTtable[nt,2]+NTtable[nt,3]+NTtable[nt,5]
@@ -42,7 +43,7 @@ def entropy(AA, NTtable, VarTables):
     return codone
     
 
-def scoring(candidate, NTtable):
+def scoring(candidate, NTtable, VarTables, TimTables):
     AAscores = {
     "A":  5.0, "C":  7.0, "D":  10.0,
     "E": 10.0, "F": 5.0, "G":  5.0,
@@ -101,12 +102,31 @@ def scoring(candidate, NTtable):
     entropies = mean(entropies)
     entropyscore = 60 - (60*entropies)
               
-    #UniformEntropy
+    #Uniform Entropy across Variants
+    entropyvar = []
+    for x in indexes:
+        entropies = []
+        for v in range(0, np.size(VarTables, 2)):
+            ent = entropy(x, Vartables[:,:,v])
+            entropies.append(ent)
+        entropyvar.append(variance(entropies))
+    entropyvariance = mean(entropyvar)
+    entropybyvariantscore = (1 - (entropyvariance/0.7))*5
 
+    #Uniform Entropy across Time
+    entropytim = []
+    for x in indexes:
+        entropies = []
+        for v in range(0, np.size(TimTables, 2)):
+            ent = entropy(x, Timtable[:,:,v])
+            entropies.append(ent)
+        entropytim.append(variance(entropies))
+    entropyvariance = mean(entropytim)
+    entropybytimescore = (1 - (entropyvariance/0.7))*5
 
-    totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore
+    totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore+entropybyvariantscore+entropybytimescore
 
-    if totalscore > 50:
+    if totalscore > 75:
         AAs = "".join(AAs)
         finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, totalscore]
         return finallist

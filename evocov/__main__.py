@@ -94,6 +94,8 @@ if not os.path.isdir("Analysis"):
 print("The pipeline will now proceed with counting and analysis of the mutational landscape of the SARS-CoV-2 Genome.")
 NTtable = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
 numsequences = simplecounter("AA", AAfile, "Analysis/simplecountsAA.csv")
+timtables = metasplitcounter("NT", NTfile, "date", ["2019-12", "2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06"])
+
 
 
 if default == True:
@@ -106,14 +108,14 @@ else:
     else:
         varguments = var.split(" ")
         
-vartables = metasplitcounter("AA", AAfile, "variant", varguments)
+vartables = metasplitcounter("NT", NTfile, "variant", varguments)
 
 
 #Scoring
 candidates = open("Data/candidates.txt").readlines()
 scores = []
 for x in tqdm(candidates):
-    score = scoring(x, NTtable)
+    score = scoring(x, NTtable, vartables, timtables)
     if score != "NA":
         scores.append(score)
 sortedscores = sorted(scores, key = itemgetter(7))
