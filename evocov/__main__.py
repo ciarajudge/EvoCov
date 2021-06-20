@@ -92,8 +92,11 @@ else:
 if not os.path.isdir("Analysis"):
     os.makedirs("Analysis")
 print("The pipeline will now proceed with counting and analysis of the mutational landscape of the SARS-CoV-2 Genome.")
+print("Round 1/4")
 NTtable = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
+print("Round 2/4")
 numsequences = simplecounter("AA", AAfile, "Analysis/simplecountsAA.csv")
+print("Round 3/4")
 timtables = metasplitcounter("NT", NTfile, "date", ["2019-12", "2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06"])
 
 
@@ -107,18 +110,19 @@ else:
         varguments = ["B.1.1.7", "B.1.351", "B.1.427", "B.1.429","P.1", "B.1.617.2"]
     else:
         varguments = var.split(" ")
-        
+print("Round 4/4")        
 vartables = metasplitcounter("NT", NTfile, "variant", varguments)
 
 
 #Scoring
-candidates = open("Data/candidates.txt").readlines()
+print("\nLoading in and scoring epitope candidates\n")
+candidates = open("Data/candidates1.txt").readlines()
 scores = []
 for x in tqdm(candidates):
     score = scoring(x, NTtable, vartables, timtables)
     if score != "NA":
         scores.append(score)
-sortedscores = sorted(scores, key = itemgetter(7))
+sortedscores = sorted(scores, key = itemgetter(9), reverse = True)
 with open("Analysis/scoredepitopes.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(sortedscores)
@@ -128,10 +132,12 @@ with open("Analysis/scoredepitopes.csv", "w", newline="") as f:
 print("Retrieving current case data for all countries from the WHO, this will be used to normalise the counts by country.\n")
 wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", ".")
 
+metasplitcounter("AA", AAfile, "variant", varguments)
+
 #Make PDF
 if not os.path.isdir("Plots"):
     os.makedirs("Plots")
-print("Creating a PDF of the pipeline results")
+print("\nCreating a PDF of the pipeline results")
 subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv", shell = True)
 
 subprocess.call("rm WHO*", shell = True)

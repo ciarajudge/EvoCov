@@ -73,7 +73,7 @@ def scoring(candidate, NTtable, VarTables, TimTables):
         lenscore = 10
     else:
         lenscore = len(indexes)
-        
+       
     #AA Score
     AAscore = []
     for x in AAs:
@@ -94,41 +94,43 @@ def scoring(candidate, NTtable, VarTables, TimTables):
     inS1 = inS1/len(indexes)
     S1score = 7*inS1
     locationscore = S1score+RBDscore
-
+    
     #Entropy
     entropies = []
     for x in indexes:
         entropies.append(entropy(x, NTtable))
     entropies = mean(entropies)
     entropyscore = 60 - (60*entropies)
-              
+    
+    '''
     #Uniform Entropy across Variants
     entropyvar = []
     for x in indexes:
         entropies = []
         for v in range(0, np.size(VarTables, 2)):
-            ent = entropy(x, Vartables[:,:,v])
+            ent = entropy(x, VarTables[:,:,v])
             entropies.append(ent)
         entropyvar.append(variance(entropies))
     entropyvariance = mean(entropyvar)
     entropybyvariantscore = (1 - (entropyvariance/0.7))*5
-
+    print(entropybyvariantscore)
     #Uniform Entropy across Time
     entropytim = []
     for x in indexes:
         entropies = []
-        for v in range(0, np.size(TimTables, 2)):
-            ent = entropy(x, Timtable[:,:,v])
+        for t in range(0, np.size(TimTables, 2)):
+            ent = entropy(x, TimTables[:,:,t])
             entropies.append(ent)
         entropytim.append(variance(entropies))
     entropyvariance = mean(entropytim)
     entropybytimescore = (1 - (entropyvariance/0.7))*5
+    print(entropybytimescore)
+    '''
+    totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore
 
-    totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore+entropybyvariantscore+entropybytimescore
-
-    if totalscore > 75:
+    if totalscore > 50:
         AAs = "".join(AAs)
-        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, totalscore]
+        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, 0, 0, totalscore]
         return finallist
     else:
         return "NA"

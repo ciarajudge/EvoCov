@@ -25,7 +25,7 @@ def metasplitcounter(form, infile, meta, targets):
         m = 1
 
     targetcounts = [0]*len(targets)
-    print(targets)
+
     
     count = 0
     otherbases = []
@@ -60,9 +60,7 @@ def metasplitcounter(form, infile, meta, targets):
             else:
                 continue
 
-    print(count)
-    print(otherbases)
-    print(targetcounts)
+
     if not os.path.isdir("Analysis/"+meta):
         os.makedirs("Analysis/"+meta)
     for x in range(0, len(targets)):

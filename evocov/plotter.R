@@ -216,7 +216,7 @@ pdf(file = "results.pdf", paper = "a4", width = 7, height = 10.5)
 layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 8), ncol = 1), heights = c(1,0.6,0.5,1,4,1, 4, 3))
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
-text(1,1,"Evocov Epitope Selection Pipeline Results", cex = 2.5)
+text(1,1,"EvoCov Epitope Selection Pipeline Results", cex = 2.5)
 par(mar=c(0,0,0,0))
 plot(1,1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
 text(1,1.1, cex = 1.5, paste0(c("Thank you for using the Evicov Evolution pipeline for SARS-CoV-2! The following \n results are based on ", 
