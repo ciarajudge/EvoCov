@@ -116,6 +116,81 @@ addfromfile <- function(filepath, type, dot, color) {
     points(1:length(counts), counts, pch = dot, col = color)
   }
 }
+heatmapmaker <- function(matrix, names1, names2) {
+  library(RColorBrewer)
+  dimnames(matrix) <- list(as.character(names1), as.character(names2))
+  newdf <- as_tibble(matrix, rownames = NA)
+  newdf <- cbind(firstletter = as.character(names1), newdf)
+  newdf <- pivot_longer(newdf, !firstletter)
+  newdf$firstletter <- as.character(newdf$firstletter)
+  names(newdf)[1] <- "n"
+  names(newdf)[2] <- "t"
+  names(newdf)[3] <- "variable"
+  column2 <- rep(names2, length(names1))
+  newdf$t <- as.character(column2)
+  newdf$t <- as.numeric(newdf$t)
+  newdf$n <- as.numeric(newdf$n)
+  uniquepi <- sort(unique(newdf$variable))
+  newdf <- data.frame(cbind(newdf, rep(0, nrow(newdf))))
+  colors <- c(heat.colors(length(uniquepi)), "black")
+  names(newdf)[4] <- "color"
+  for (i in 1:nrow(newdf)){
+    newdf[i, 4] <- match(newdf[i,3], uniquepi)
+  }
+  plot(newdf$t, newdf$n, col = colors[length(colors) + 1 - newdf$color], 
+       pch = 15, cex = 3, ylab = "", xlab = "t", xaxs = "i", yaxs = "i")
+
+}
+initialiseRBDspecial <- function(xlabels, ylimit) {
+  plot(c(1, 1273), c(0, 0), xlim = c(0,length(xlabels)+1),ylim = c(0, ylimit), main = "Mutational Landscape of Suggested Epitope Sequence",
+       ylab = "Frequency Mutated", pch = ".", xlab = "AA in Epitope", xaxt="n",xaxs="i", yaxs="i")
+  axis(1, at=1:length(xlabels), labels=xlabels)
+  rect(0, 0, length(xlabels)+1, ylimit, 
+       col = adjustcolor("green", alpha.f = 0.2), border = NA)
+}
+epitopezoom <- function(epitopelist,reference,counts) {
+  par(mar = c(6, 4, 3, 1))
+  AAs <- c("A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P",
+           "S", "T", "W", "Y", "V", "X", "*", "_")
+  spikeseq <- paste0(suppressWarnings(readLines(reference)), collapse = "")
+  spikeseq <- unlist(str_split(spikeseq, ""))
+  spikeseq <- match(spikeseq, AAs)
+  num_AAs <- length(epitopelist)
+  numericepitopes <- as.numeric(epitopelist)
+  slices <- c()
+  for (i in 1:(length(epitopelist)-1)){
+    if (as.numeric(epitopelist[i+1])-as.numeric(epitopelist[i]) > 1){
+      slices <- append(slices, i)
+    }
+  }
+  for (s in 1:length(slices)){
+    epitopelist <- c(epitopelist[1:(slices[s]+s-1)], "...", epitopelist[(slices[s]+s):length(epitopelist)])
+  }
+
+  table <- counts[numericepitopes,]
+  maxs <- max(rowSums(table) - table[,21])
+  max <- maxs + (0.1*maxs)
+  initialiseRBDspecial(epitopelist, max)
+  count = 0
+  for (x in 1:length(epitopelist)) {
+    if (epitopelist[x]=="..."){
+      next
+    }
+    count = count +1
+    position <- as.numeric(epitopelist[x])
+    y1 <- 0
+    for (AA in 1:20) {
+      color <- AAcolors[AA]
+      y2 <- y1 + table[count, AA]
+      lines(c(x,x), c(y1, y2), col = color, lwd = 8, lend = 1)
+      y1 <- y2
+    }
+      text(x, (y1+(0.05*maxs)), AAs[spikeseq[position]], cex = 1)
+  }
+  legend("bottom", inset = c(0, -0.6),legend=AAs[1:20], pch = 15, col = AAcolors[1:20],
+         xpd = TRUE, horiz = T)
+}
+
 
 args <- commandArgs(trailingOnly=TRUE)
 nttable <- read.csv(args[1], header = F)
@@ -172,7 +247,7 @@ par(mar=c(4.5, 4.5, 1, 1))
 initialiseRBDNT("Frequency Mutated")
 lines(1:length(ntcountsnons), ntcountsnons)
 
-print("check")
+
 ##Page 2
 layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 8), ncol = 1), heights = c(1,2,5,5, 2, 2))
 par(mar=c(0,0,0,0))
@@ -324,12 +399,12 @@ and the top scoring candidates are returned and saved in Analysis/scoredepitopes
 based on three factors: accessibility, distance between amino acids and location on the spike protein. Accessibility data 
 was obtained from the Protein Data Bank Spike Trimer 7DK3, yielding 215 stretches of accessible residues. These stretches 
 were filtered to only include those in the S1 subunit of the spike, as the S2 subunit is not displayed on the surface of the
-SARS-CoV-2 particle. All permutations of 2 and 3 stretches from the remaining X stretches tested for the average distance 
+SARS-CoV-2 particle. All permutations of 2, 3 and 4 stretches from the remaining 98 stretches tested for the average distance 
 between the stretches in the combinations, and these permutations were filtered to give a list of all combinations of accessible
-amino acids with an average distance of less than 15 ångströms apart. In doing this, patches of exposed amino acids that are in 
-close proximity but not necessarily near to each other on the spike protein sequence. Longer exposed stretches were also chopped 
-up to allow their residues to be scored separately, in the event that a single residue on the edge of a stretch may for whatever 
-reason (being highly mutable for example) drag down the score for the whole sequence.", cex = 1)
+amino acids with an average distance of less than 20 ångströms apart (215,000 candidate epitopes in totale). In doing this, patches
+of exposed amino acids that are in close proximity but not necessarily near to each other on the spike protein sequence. Longer 
+exposed stretches were also chopped up to allow their residues to be scored separately, in the event that a single residue on the
+edge of a stretch may for whatever reason (being highly mutable for example) drag down the score for the whole sequence.", cex = 1)
 
 spikemodel <-readPNG("Helpers/spike.png")
 spikelabels <-readPNG("Helpers/spikelabels.png")
@@ -365,20 +440,73 @@ calculated. Epitopes that do not see great changes in entropy across different v
 
 #Page 6
 ranks = c("red","blue","yellow","green","purple")
-epitopes = read.csv("Analysis/scoredepitopes.csv", header = T)
+epitopes = suppressWarnings(read.csv("Analysis/scoredepitopes.csv", header = F))
+#residuedistances <- read.csv("residuedistances.csv")
 for (epitope in 1:5){
-layout(matrix(c(1,2, 2, 3, 3,3,4, 5, 6, 7,7, 8, 9,10,10,11,11,12,13,14,14,15,15,16), ncol = 3, byrow = T), heights = c(2,1,2,2,2,2,2,2))
+layout(matrix(c(1,2, 2, 3, 3,3,4, 5, 6, 7,8, 9,10,10,10), ncol = 3, byrow = T), heights = c(2.5,1,2,2,6))
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
 rect(0, 0, 2, 2, col = ranks[epitope])
-text(1,1,as.character(epitope), cex = 5, col = "white", font = 2)
+text(1,1,as.character(epitope), cex = 7, col = "white", font = 2)
+
+sequence <- epitopes[epitope,1]
+sequencelist <- unlist(str_split(sequence, ""))
+loci <- epitopes[epitope, 2]
+locilist <- unlist(str_split(loci, "\\["))[2]
+locilist <- unlist(str_split(locilist, "\\]"))[1]
+locilist <- unlist(str_split(locilist, ","))
+
 
 par(mar=c(0,0,0,0))
-plot(1, 1, col = "white", xaxt = "n", yaxt = "n", ylim = c(0,5), xlim = c(0,10))
+plot(1, 1, col = "white", xaxt = "n", yaxt = "n", ylim = c(0,5), xlim = c(0,length(sequencelist)+1))
+for (i in 1:length(sequencelist)) {
+  x = i
+  text(i,4, sequencelist[i], cex = 3)
+  text(i,1, locilist[i], cex = 2)
+  lines(c(i,i), c(2,3))
+}
 
+par(mar=c(0,0,0,0))
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+text(1,1,paste0(c("Total Score: ", as.character(round(as.numeric(epitopes[epitope,10]),2))), collapse =""), cex = 3.5, font = 3)
 
+par(mar=c(0,0,0,0))
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+rect(0, 0, 2, 2, col = "orange")
+text(1,1.5,"Distance Score", cex = 2, col = "white")
+text(1,0.6,as.character(round(as.numeric(epitopes[epitope,3]),2)), cex = 4, col = "white")
 
+par(mar=c(0,0,0,0))
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+rect(0, 0, 2, 2, col = "limegreen")
+text(1,1.5,"Length Score", cex = 2, col = "white")
+text(1,0.6,as.character(round(as.numeric(epitopes[epitope,4]),2)), cex = 4, col = "white")
 
+par(mar=c(0,0,0,0))
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+rect(0, 0, 2, 2, col = "slateblue")
+text(1,1.5,"AA Score", cex = 2, col = "white")
+text(1,0.6,as.character(round(as.numeric(epitopes[epitope,5]),2)), cex = 4, col = "white")
+
+par(mar=c(0,0,0,0))
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+rect(0, 0, 2, 2, col = "blue4")
+text(1,1.5,"Location Score", cex = 2, col = "white")
+text(1,0.6,as.character(round(as.numeric(epitopes[epitope,6]),2)), cex = 4, col = "white")
+
+par(mar=c(0,0,0,0))
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+rect(0, 0, 2, 2, col = "gold")
+text(1,1.5,"Entropy Score", cex = 2, col = "white")
+text(1,0.6,as.character(round(as.numeric(epitopes[epitope,7]),2)), cex = 4, col = "white")
+
+par(mar=c(0,0,0,0))
+plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+rect(0, 0, 2, 2, col = "deeppink")
+text(1,1.5,"Consistency Score", cex = 2, col = "white")
+text(1,0.6,as.character(round(as.numeric(epitopes[epitope,8]),2)), cex = 4, col = "white")
+
+epitopezoom(locilist, "Data/spike_AA.txt", aatable)
 }
 
 
