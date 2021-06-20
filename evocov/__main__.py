@@ -135,10 +135,20 @@ wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", ".")
 metasplitcounter("AA", AAfile, "variant", varguments)
 
 #Make PDF
-if not os.path.isdir("Plots"):
-    os.makedirs("Plots")
-print("\nCreating a PDF of the pipeline results")
-subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv", shell = True)
+if default == True:
+    if not os.path.isdir("Plots"):
+        os.makedirs("Plots")
+    print("\nCreating a PDF of the pipeline results")
+    subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv", shell = True)
+
+else:
+    plotornot = input("Would you like to use R to pipe the output to a PDF? (y/n)")
+    if plotornot == "y":
+        if not os.path.isdir("Plots"):
+            os.makedirs("Plots")
+        print("\nCreating a PDF of the pipeline results")
+        subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv", shell = True)
+        
 
 subprocess.call("rm WHO*", shell = True)
 
