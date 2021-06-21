@@ -11,13 +11,11 @@ idna @ file:///tmp/build/80754af9/idna_1593446292537/work
 kiwisolver==1.3.1
 matplotlib==3.4.2
 numpy==1.20.3
-pdfkit==0.6.1
 Pillow==8.2.0
 pycosat==0.6.3
 pycparser @ file:///tmp/build/80754af9/pycparser_1594388511720/work
 pyOpenSSL @ file:///tmp/build/80754af9/pyopenssl_1605545627475/work
 pyparsing==2.4.7
-PyPDF2==1.26.0
 PySocks @ file:///opt/concourse/worker/volumes/live/85a5b906-0e08-41d9-6f59-084cee4e9492/volume/pysocks_1594394636991/work
 python-dateutil==2.8.1
 requests @ file:///tmp/build/80754af9/requests_1592841827918/work

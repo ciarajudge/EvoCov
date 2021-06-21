@@ -13,7 +13,6 @@ from tqdm import tqdm
 import json
 import wget
 import requests
-import pdfkit
 import datetime
 import subprocess
 from itertools import repeat
