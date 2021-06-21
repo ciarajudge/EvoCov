@@ -66,11 +66,11 @@ def scoring(candidate, NTtable, VarTables, TimTables):
     
     #Distance
     distance = float(candidate.split("_")[1].strip("\n"))
-    distancescore = 5*((15-distance)/15)
+    distancescore = 5*((20-distance)/20)
     
     #Length
-    if len(indexes)>10:
-        lenscore = 10
+    if len(indexes)>5:
+        lenscore = 5
     else:
         lenscore = len(indexes)
        
@@ -78,7 +78,7 @@ def scoring(candidate, NTtable, VarTables, TimTables):
     AAscore = []
     for x in AAs:
         AAscore.append(AAscores[x])
-    AAscore = (mean(AAscore)/10)*5
+    AAscore = (mean(AAscore)/10)*10
     
     #Location
     inRBD = 0

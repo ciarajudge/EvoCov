@@ -154,28 +154,6 @@ subprocess.call("rm WHO*", shell = True)
 
 try:
     subprocess.call("curl http://textbelt.com/text -d number="+sys.argv[3]+" -d message=\"Pipeline Analysis Complete!\" -d key=e237256cdcb7af72df888a7558f92c0e97b0fb55OVbGpYEsvYujZXDCVi0Rtvom6 ", shell = "True")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    sys.exit()
+except:
+    sys.exit()
