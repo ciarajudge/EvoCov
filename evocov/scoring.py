@@ -86,21 +86,14 @@ def scoring(candidate, NTtable, VarTables, TimTables):
         if x in range(318, 541):
             inRBD += 1
     inRBD = inRBD/len(indexes)
-    RBDscore = 3*inRBD
-    inS1 = 0
-    for x in indexes:
-        if x in range(0, 541):
-            inS1 += 1
-    inS1 = inS1/len(indexes)
-    S1score = 7*inS1
-    locationscore = S1score+RBDscore
+    RBDscore = 5*inRBD
     
     #Entropy
     entropies = []
     for x in indexes:
         entropies.append(entropy(x, NTtable))
     entropies = mean(entropies)
-    entropyscore = 60 - (60*entropies)
+    entropyscore = 65 - (65*entropies)
     
     '''
     #Uniform Entropy across Variants

@@ -124,7 +124,7 @@ initialiseRBDspecial <- function(xlabels, ylimit) {
        col = adjustcolor("green", alpha.f = 0.2), border = NA)
 }
 epitopezoom <- function(epitopelist,reference,counts) {
-  par(mar = c(6, 4, 3, 1))
+  par(mar = c(7, 4, 3, 1))
   AAs <- c("A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P",
            "S", "T", "W", "Y", "V", "X", "*", "_")
   spikeseq <- paste0(suppressWarnings(readLines(reference)), collapse = "")
@@ -162,7 +162,7 @@ epitopezoom <- function(epitopelist,reference,counts) {
     }
       text(x, (y1+(0.05*maxs)), AAs[spikeseq[position]], cex = 1)
   }
-  legend("bottom", inset = c(0, -0.6),legend=AAs[1:20], pch = 15, col = AAcolors[1:20],
+  legend("bottom", inset = c(0, -0.25),legend=AAs[1:20], pch = 15, col = AAcolors[1:20],
          xpd = TRUE, horiz = T)
 }
 stackedbarNT <- function(MutationTable, reference, counts) {
@@ -448,7 +448,7 @@ plot(1, 1, col = "white", xaxt = "n", yaxt = "n", ylim = c(0,5), xlim = c(0,leng
 for (i in 1:length(sequencelist)) {
   x = i
   text(i,4, sequencelist[i], cex = 3)
-  text(i,1, locilist[i], cex = 2)
+  text(i,1.5, locilist[i], cex = 1.75)
   lines(c(i,i), c(2,3))
 }
 
