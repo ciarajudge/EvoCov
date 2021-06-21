@@ -401,7 +401,7 @@ was obtained from the Protein Data Bank Spike Trimer 7DK3, yielding 215 stretche
 were filtered to only include those in the S1 subunit of the spike, as the S2 subunit is not displayed on the surface of the
 SARS-CoV-2 particle. All permutations of 2, 3 and 4 stretches from the remaining 98 stretches tested for the average distance 
 between the stretches in the combinations, and these permutations were filtered to give a list of all combinations of accessible
-amino acids with an average distance of less than 20 ångströms apart (215,000 candidate epitopes in totale). In doing this, patches
+amino acids with an average distance of less than 20 ångströms apart (550,000 candidate epitopes in totale). In doing this, patches
 of exposed amino acids that are in close proximity but not necessarily near to each other on the spike protein sequence. Longer 
 exposed stretches were also chopped up to allow their residues to be scored separately, in the event that a single residue on the
 edge of a stretch may for whatever reason (being highly mutable for example) drag down the score for the whole sequence.", cex = 1)

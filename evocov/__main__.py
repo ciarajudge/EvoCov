@@ -34,7 +34,7 @@ else:
     
 #Make sure correct fasta and metadata files have been passed
 correct = True
-if not os.path.isfile(fasta) and os.path.isfile(meta):
+if not (os.path.isfile(fasta) and os.path.isfile(meta)):
     correct = False
 while correct == False:
     inputstring = input("Uh oh! One of the file paths you entered was invalid. Please try again (enter the paths separated by a space).\n")
@@ -116,7 +116,7 @@ vartables = metasplitcounter("NT", NTfile, "variant", varguments)
 
 #Scoring
 print("\nLoading in and scoring epitope candidates\n")
-candidates = open("Data/candidates1.txt").readlines()
+candidates = open("Data/candidates.txt").readlines()
 scores = []
 for x in tqdm(candidates):
     score = scoring(x, NTtable, vartables, timtables)
