@@ -29,6 +29,10 @@ python -m evocov
 
 Running the pipeline in this manner will create an interactive session where you will be able to select file names for the output, and give the names of the variants you want included in the analysis. Following epitope scoring you will also be given the option to use R to generate an output PDF with the key findings of the pipeline.
 
+## Pipeline Structure
+Below is a flowchart outlining the rough pipeline structure.
+![Image](pipelineflowchart.jpg)
+
 ## Things to note
 1. The 'consistency scores' in the output are works in progress, and for now will be assigned 0 until this aspect has been completed and debugged (ETA Wed 23/6/21)
 2. The pipeline downloads WHO case data for normalisation by country, but currently does not carry this out just yet. The best way to normalise by country given varied sequencing levels etc is still up for debate, so if you have any suggestions for this feel free to email ciarajudge@ebi.ac.uk.
