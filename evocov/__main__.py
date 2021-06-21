@@ -89,6 +89,9 @@ else:
     aaconvert(NTfile, AAfile)
 
 #Counting
+subprocess.call("rm -r Analysis/date", shell = True)
+subprocess.call("rm -r Analysis/variant", shell = True)
+
 if not os.path.isdir("Analysis"):
     os.makedirs("Analysis")
 print("The pipeline will now proceed with counting and analysis of the mutational landscape of the SARS-CoV-2 Genome.")
