@@ -51,8 +51,8 @@ else:
     NTfile = input("\nNext we will create a diff file to document the differences between each sequence and the SARS-CoV-2 reference, and parse the metadata of interest. Please type the desired name for this file.\n")
 if os.path.isfile("Data/"+NTfile):
     if default == True:
-        repeat = "skip"
-        print("\nWe have detected an existing NT diff file, so this step will be skipped!\n")
+        repeat = "update"
+        print("\nWe have detected an existing NT diff file, so existing sequences in the diff file will be catalogued and only new ones will be added.\n")
     else:
         repeat = input("\nThere is already a file with that name! Would you like to skip this step of the pipeline, completely rebuild this file from scratch, or update the file with any new sequences?(skip/scratch/update)\n")
     if repeat == "update":
@@ -79,8 +79,8 @@ else:
     AAfile = input("\n Please enter the name desired for the Amino Acid version of the diff file.\n")
 if os.path.isfile("Data/"+AAfile):
     if default == True:
-        repeat = "skip"
-        print("\nWe have detected an existing AA diff file, so this step will be skipped!\n")
+        repeat = "scratch"
+        print("\nMaking an Amino Acid Version of the Diff File!\n")
     else:
         repeat = input("\nThere is already a file with that name! Would you like to skip this step of the pipeline, or rebuild this file from scratch?(skip/scratch)\n")
     if repeat == "scratch":

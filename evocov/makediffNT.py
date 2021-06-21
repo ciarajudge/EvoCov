@@ -6,16 +6,12 @@ from tqdm import tqdm
 from operator import add
 
 
-
-
-def mutationchecker(num):
-    if reference[num] == sequence[num]:
-        return False
-    else:
-        return True
-
-
 def seqparser(filepath, metadata, otfile, complete):
+    def mutationchecker(num):
+        if reference[num] == sequence[num]:
+            return False
+        else:
+            return True
     reference = open("Data/spike_NT.txt", "r").readlines()
     reference = list(reference[0].lower())
     dictionary = {item[2]:item[3:5]+item[10:12] for item in metadata}
@@ -30,7 +26,7 @@ def seqparser(filepath, metadata, otfile, complete):
             accession = record.id
             if accession in complete:
                 count += 1
-                continue       
+                continue
             try:
                 meta = dictionary[accession]
             except:
@@ -40,6 +36,7 @@ def seqparser(filepath, metadata, otfile, complete):
             try:
                 mutations = list(filter(mutationchecker, range(0, (len(reference)-1))))
             except:
+                print("error")
                 continue
         
             label = "> "+accession+"|"+str(meta[0])+"|"+meta[3]+"|"+meta[2]+"|"+meta[1]
@@ -59,7 +56,6 @@ def seqparser(filepath, metadata, otfile, complete):
                 count += 1
                 outfile.write(label+"\n")
 
-            completefile.write(accession+"\n")
             added += 1  
 
     print(str(errors)+" sequences with high diff count detected and saved to misaligned.txt")
