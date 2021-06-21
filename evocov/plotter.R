@@ -10,6 +10,8 @@ qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
 col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
 AAcolors <- sample(col_vector, 22, replace = F)
 
+NTcolors <- c("red", "blue", "yellow", "green", "pink", "purple")
+
 initialisespikeNT <- function(ylabel, type) {
   if (type == 1) {
     ylimit = 1.1
@@ -189,6 +191,29 @@ epitopezoom <- function(epitopelist,reference,counts) {
   }
   legend("bottom", inset = c(0, -0.6),legend=AAs[1:20], pch = 15, col = AAcolors[1:20],
          xpd = TRUE, horiz = T)
+}
+stackedbarNT <- function(MutationTable, reference, counts) {
+  AAs <- c("A", "C", "T", "G", "N", "_")
+  spikeseq <- paste0(suppressWarnings(readLines(reference)), collapse = "")
+  spikeseq <- unlist(str_split(spikeseq, ""))
+  spikeseq <- match(spikeseq, AAs)
+  for (pos in 900:1800) {
+    x <- pos
+    y1 <- 0
+    for (AA in 1:4) {
+      color <- NTcolors[AA]
+      y2 <- y1 + MutationTable[pos, AA]
+      lines(c(x,x), c(y1, y2), col = color, lwd = 3, lend = 1)
+      y1 <- y2
+    }
+    if (counts[pos] > 0){
+      text(x, (y1+0.01), AAs[spikeseq[x]], cex = 0.4)
+    }
+  }
+  legend("top", inset = c(0, -0.2),legend=AAs[1:4], pch = 15, col = NTcolors[1:4],
+         xpd = TRUE, horiz = T)
+  
+  
 }
 
 
@@ -508,7 +533,10 @@ text(1,0.6,as.character(round(as.numeric(epitopes[epitope,8]),2)), cex = 4, col 
 
 epitopezoom(locilist, "Data/spike_AA.txt", aatable)
 }
+dev.off()
 
-
-
-
+pdf(file = "Plots/ntstackedbar.pdf", width = 15, height = 4)
+par(mar = c(4,4,4,2))
+initialiseRBDNT("Frequency Mutated")
+stackedbarNT(nttable, "Data/spike_NT.txt", ntcounts)
+dev.off()
