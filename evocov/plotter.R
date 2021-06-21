@@ -9,9 +9,7 @@ n <- 22
 qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
 col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
 AAcolors <- sample(col_vector, 22, replace = F)
-
 NTcolors <- c("red", "yellow", "blue", "green", "pink", "purple")
-
 initialisespikeNT <- function(ylabel, type) {
   if (type == 1) {
     ylimit = 1.1
@@ -118,31 +116,6 @@ addfromfile <- function(filepath, type, dot, color) {
     points(1:length(counts), counts, pch = dot, col = color)
   }
 }
-heatmapmaker <- function(matrix, names1, names2) {
-  library(RColorBrewer)
-  dimnames(matrix) <- list(as.character(names1), as.character(names2))
-  newdf <- as_tibble(matrix, rownames = NA)
-  newdf <- cbind(firstletter = as.character(names1), newdf)
-  newdf <- pivot_longer(newdf, !firstletter)
-  newdf$firstletter <- as.character(newdf$firstletter)
-  names(newdf)[1] <- "n"
-  names(newdf)[2] <- "t"
-  names(newdf)[3] <- "variable"
-  column2 <- rep(names2, length(names1))
-  newdf$t <- as.character(column2)
-  newdf$t <- as.numeric(newdf$t)
-  newdf$n <- as.numeric(newdf$n)
-  uniquepi <- sort(unique(newdf$variable))
-  newdf <- data.frame(cbind(newdf, rep(0, nrow(newdf))))
-  colors <- c(heat.colors(length(uniquepi)), "black")
-  names(newdf)[4] <- "color"
-  for (i in 1:nrow(newdf)){
-    newdf[i, 4] <- match(newdf[i,3], uniquepi)
-  }
-  plot(newdf$t, newdf$n, col = colors[length(colors) + 1 - newdf$color], 
-       pch = 15, cex = 3, ylab = "", xlab = "t", xaxs = "i", yaxs = "i")
-
-}
 initialiseRBDspecial <- function(xlabels, ylimit) {
   plot(c(1, 1273), c(0, 0), xlim = c(0,length(xlabels)+1),ylim = c(0, ylimit), main = "Mutational Landscape of Suggested Epitope Sequence",
        ylab = "Frequency Mutated", pch = ".", xlab = "AA in Epitope", xaxt="n",xaxs="i", yaxs="i")
@@ -216,7 +189,6 @@ stackedbarNT <- function(MutationTable, reference, counts) {
   
 }
 
-
 args <- commandArgs(trailingOnly=TRUE)
 nttable <- read.csv(args[1], header = F)
 ntnons <- cbind(nttable[,1:4], nttable[,6])
@@ -224,17 +196,6 @@ ntcounts <- rowSums(nttable)
 ntcountsnons <- rowSums(ntnons)
 aatable <- read.csv(args[3], header = F)
 aacounts <- rowSums(aatable)
-
-
-checkamplicons <- function(Ns){
-  ampstarts <- c()
-  ampstops <- c()
-  inamplicon <- T
-  counter <- 0
-  for (i in Ns){
-#    if (i>0.)
-  }
-}
 
 pdf(file = "results.pdf", paper = "a4", width = 7, height = 10.5)
 ##Page 1
