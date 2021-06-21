@@ -31,7 +31,7 @@ Running the pipeline in this manner will create an interactive session where you
 
 ## Pipeline Structure
 Below is a flowchart outlining the rough pipeline structure.
-![Image](pipelineflowchart.jpeg)
+![Image](pipelineflowchart.jpg)
 
 ## Things to note
 1. The 'consistency scores' in the output are works in progress, and for now will be assigned 0 until this aspect has been completed and debugged (ETA Wed 23/6/21)
