@@ -10,7 +10,7 @@ qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
 col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
 AAcolors <- sample(col_vector, 22, replace = F)
 
-NTcolors <- c("red", "blue", "yellow", "green", "pink", "purple")
+NTcolors <- c("red", "yellow", "blue", "green", "pink", "purple")
 
 initialisespikeNT <- function(ylabel, type) {
   if (type == 1) {
