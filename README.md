@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 
 ## Default Usage
-Navigate to the cloned repository and call the package along with the file paths of your latest GISAID masked sequence file and metadata file. This will initiate a default run of the pipeline, including handling of any exceptions or options. This includes the final step of the pipeline where the results are piped to a PDF using R.
+Navigate to the cloned repository and call the package along with the file paths of your latest GISAID masked sequence file and metadata file. This will initiate a default run of the pipeline, including handling of any exceptions or options. This includes the final step of the pipeline where the results are piped to a PDF using R. If you'd like to be notified by text when the pipeline is complete, pass a third argument with a valid mobile number (no plus signs or brackets) for example: 353877910680 where the country code is +353 and the phone number is 0877910680.
 
 ```bash
 python -m evocov /path/to/sequencefile_masked.fa /path/to/metadata.tsv
