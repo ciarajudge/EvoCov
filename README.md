@@ -37,6 +37,7 @@ Below is a flowchart outlining the rough pipeline structure.
 1. The 'consistency scores' in the output are works in progress, and for now will be assigned 0 until this aspect has been completed and debugged (ETA Wed 23/6/21)
 2. The pipeline downloads WHO case data for normalisation by country, but currently does not carry this out just yet. The best way to normalise by country given varied sequencing levels etc is still up for debate, so if you have any suggestions for this feel free to email ciarajudge@ebi.ac.uk.
 3. Currently the diff files include Ns, in order to allow instances of amplicon dropping or unusually high N counts to be noted. Soon, ARTIC primer locations will be used to make smarter decisions as to whether to continue to consider sequences with unusually high N counts.
+4. Something weird has been happening today (21/6/21) with the pipeline detecting exclusively gaps at positions 14, 407, 774, 955, 960, 1090, 1100, 1241, 2828, 2829, 3061, 3371, 3641, 3820, 3821. The only variable changed was a new GISAID file, so perhaps this is a GISAID problem? Investigation in progress in any case.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
