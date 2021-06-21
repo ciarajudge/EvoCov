@@ -85,6 +85,7 @@ if os.path.isfile("Data/"+AAfile):
     if repeat == "scratch":
         aaconvert(NTfile, AAfile)
 else:
+    print("\nMaking an Amino Acid Version of the Diff File!\n")
     aaconvert(NTfile, AAfile)
 
 #Counting
