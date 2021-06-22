@@ -87,6 +87,7 @@ def scoring(candidate, NTtable, VarTables, TimTables):
             inRBD += 1
     inRBD = inRBD/len(indexes)
     RBDscore = 5*inRBD
+    locationscore = RBDscore
     
     #Entropy
     entropies = []
