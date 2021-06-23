@@ -19,29 +19,35 @@ from itertools import repeat
 import operator
 from operator import itemgetter
 
-#Initialise
-if len(sys.argv) > 1:
-    print("Welcome to evocov, the SARS-CoV-2 epitope selection pipeline! Because you have already passed your metadata and fasta file, the pipeline will run on default.")
+backdoor = False
+if sys.argv[1] == "backdoor":
+    backdoor = True
     default = True
-    fasta = sys.argv[1]
-    meta = sys.argv[2]
-else:
-    default = False
-    inputstring = input("Welcome to evocov, the SARS-CoV-2 epitope selection pipeline! First please pass the file paths of your latest GISAID FASTA file and the corresponding metadata, separated by a space.\n")
-    fasta = inputstring.split(" ")[0]
-    meta = inputstring.split(" ")[1]
+
+if backdoor == False:
+#Initialise
+    if len(sys.argv) > 1:
+        print("Welcome to evocov, the SARS-CoV-2 epitope selection pipeline! Because you have already passed your metadata and fasta file, the pipeline will run on default.")
+        default = True
+        fasta = sys.argv[1]
+        meta = sys.argv[2]
+    else:
+        default = False
+        inputstring = input("Welcome to evocov, the SARS-CoV-2 epitope selection pipeline! First please pass the file paths of your latest GISAID FASTA file and the corresponding metadata, separated by a space.\n")
+        fasta = inputstring.split(" ")[0]
+        meta = inputstring.split(" ")[1]
     
 #Make sure correct fasta and metadata files have been passed
-correct = True
-if not (os.path.isfile(fasta) and os.path.isfile(meta)):
-    correct = False
-while correct == False:
-    inputstring = input("Uh oh! One of the file paths you entered was invalid. Please try again (enter the paths separated by a space).\n")
-    fasta = inputstring.split(" ")[0]
-    meta = inputstring.split(" ")[1]
-    if os.path.isfile(fasta) and os.path.isfile(meta):
-        correct = True
-metadata = list(csv.reader(open(meta, "r"), delimiter = "\t"))
+    correct = True
+    if not (os.path.isfile(fasta) and os.path.isfile(meta)):
+        correct = False
+    while correct == False:
+        inputstring = input("Uh oh! One of the file paths you entered was invalid. Please try again (enter the paths separated by a space).\n")
+        fasta = inputstring.split(" ")[0]
+        meta = inputstring.split(" ")[1]
+        if os.path.isfile(fasta) and os.path.isfile(meta):
+            correct = True
+    metadata = list(csv.reader(open(meta, "r"), delimiter = "\t"))
 
 #Get NT diff file or file path to existing one
 if default == True:
@@ -50,8 +56,12 @@ else:
     NTfile = input("\nNext we will create a diff file to document the differences between each sequence and the SARS-CoV-2 reference, and parse the metadata of interest. Please type the desired name for this file.\n")
 if os.path.isfile("Data/"+NTfile):
     if default == True:
-        repeat = "update"
-        print("\nWe have detected an existing NT diff file, so existing sequences in the diff file will be catalogued and only new ones will be added.\n")
+        if backdoor == True:
+            repeat = "skip"
+            print("\nWe have detected an existing NT diff file, so this step will be skipped.\n")
+        else:
+            repeat = "update"
+            print("\nWe have detected an existing NT diff file, so existing sequences in the diff file will be catalogued and only new ones will be added.\n")
     else:
         repeat = input("\nThere is already a file with that name! Would you like to skip this step of the pipeline, completely rebuild this file from scratch, or update the file with any new sequences?(skip/scratch/update)\n")
     if repeat == "update":
@@ -78,8 +88,11 @@ else:
     AAfile = input("\n Please enter the name desired for the Amino Acid version of the diff file.\n")
 if os.path.isfile("Data/"+AAfile):
     if default == True:
-        repeat = "scratch"
-        print("\nMaking an Amino Acid Version of the Diff File!\n")
+        if backdoor == True:
+            repeat == "skip"
+        else:
+            repeat = "scratch"
+            print("\nMaking an Amino Acid Version of the Diff File!\n")
     else:
         repeat = input("\nThere is already a file with that name! Would you like to skip this step of the pipeline, or rebuild this file from scratch?(skip/scratch)\n")
     if repeat == "scratch":
@@ -91,17 +104,22 @@ else:
 #Counting
 subprocess.call("rm -r Analysis/date", shell = True)
 subprocess.call("rm -r Analysis/variant", shell = True)
-
 if not os.path.isdir("Analysis"):
     os.makedirs("Analysis")
 print("The pipeline will now proceed with counting and analysis of the mutational landscape of the SARS-CoV-2 Genome.")
-print("Round 1/4")
-NTtable = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
-print("Round 2/4")
-numsequences = simplecounter("AA", AAfile, "Analysis/simplecountsAA.csv")
-print("Round 3/4")
-timtables = metasplitcounter("NT", NTfile, "date", ["2019-12", "2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06"])
 
+if backdoor == True:
+    numsequences = 100
+else:
+    print("Round 1/4")
+    numsequences = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
+if backdoor == True:
+    NTtable = genfromtxt('Data/AAdifffile.csv', delimiter=',')
+else:
+    print("Round 2/4")
+    NTtable = simplecounter("AA", AAfile, "Analysis/simplecountsAA.csv")
+print("Round 3/4")
+timtables = metasplitcounter("AA", AAfile, "date", ["2019-12", "2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06"])
 
 
 if default == True:
