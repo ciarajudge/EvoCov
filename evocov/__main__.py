@@ -9,6 +9,8 @@ from evocov.countersimple import simplecounter
 from evocov.metasplitcounter import metasplitcounter
 from evocov.scoring import scoring
 from evocov.scoring import entropy
+from evocov.scoring import AAentropy
+from evocov.scoringslidingwindow import scoringslidingwindow
 from tqdm import tqdm
 import json
 import wget
@@ -60,7 +62,7 @@ if os.path.isfile("Data/"+NTfile):
             repeat = "skip"
             print("\nWe have detected an existing NT diff file, so this step will be skipped.\n")
         else:
-            repeat = "update"
+            repeat = "scratch"
             print("\nWe have detected an existing NT diff file, so existing sequences in the diff file will be catalogued and only new ones will be added.\n")
     else:
         repeat = input("\nThere is already a file with that name! Would you like to skip this step of the pipeline, completely rebuild this file from scratch, or update the file with any new sequences?(skip/scratch/update)\n")
@@ -137,6 +139,7 @@ vartables = metasplitcounter("AA", AAfile, "variant", varguments)
 
 #Scoring
 print("\nLoading in and scoring epitope candidates\n")
+
 candidates = open("Data/candidates.txt").readlines()
 scores = []
 for x in tqdm(candidates):
@@ -152,7 +155,7 @@ with open("Analysis/scoredepitopes.csv", "w", newline="") as f:
 candidates = open("Data/slidingwindowcandidates.txt").readlines()
 scores = []
 for x in tqdm(candidates):
-    score = scoring(x, NTtable, vartables, timtables)
+    score = scoringslidingwindow(x, NTtable, vartables, timtables)
     if score != "NA":
         scores.append(score)
 

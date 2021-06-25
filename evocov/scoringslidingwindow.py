@@ -60,6 +60,7 @@ def AAentropy(AA, NTtable):
 
 def scoringslidingwindow(candidate, NTtable, VarTables, TimTables):
     externals = open("Data/externals.txt", "r").readlines()
+    externals = [int(x)for x in externals]
     AAscores = {
     "A":  5.0, "C":  7.0, "D":  10.0,
     "E": 10.0, "F": 5.0, "G":  5.0,
@@ -86,13 +87,8 @@ def scoringslidingwindow(candidate, NTtable, VarTables, TimTables):
         if i in set(externals):
             external += 1
     external = external/7
-    externalscore = external*5
+    externalscore = external*15
     
-    #Length
-    if len(indexes)>5:
-        lenscore = 5
-    else:
-        lenscore = len(indexes)
        
     #AA Score
     AAscore = []
@@ -115,7 +111,7 @@ def scoringslidingwindow(candidate, NTtable, VarTables, TimTables):
     for x in indexes:
         entropies.append(AAentropy(x, Last3mostable))
     entropies = mean(entropies)
-    entropyscore = 65 - (65*entropies)
+    entropyscore = 60 - (60*entropies)
     
     
     #Uniform Entropy across Variants
@@ -137,11 +133,11 @@ def scoringslidingwindow(candidate, NTtable, VarTables, TimTables):
     timescore = 5 - (5*entropies)
     
     
-    totalscore = externalscore+lenscore+AAscore+locationscore+entropyscore+timescore+variantscore
+    totalscore = externalscore+AAscore+locationscore+entropyscore+timescore+variantscore
     indexes = [x+1 for x in indexes]
     if totalscore > 50:
         AAs = "".join(AAs)
-        finallist = [AAs, indexes, externalscore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore]
+        finallist = [AAs, indexes, externalscore, 0, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore]
         return finallist
     else:
         return "NA"
