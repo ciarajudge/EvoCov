@@ -16,7 +16,7 @@ def metasplitcounter(form, infile, meta, targets):
         reference = open("Data/spike_AA.txt", "r").readlines()
         reference = list(reference[0].lower())
         bases = ["A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P","S", "T", "W", "Y", "V", "X", "*", "_"]
-        posmutmatrix = np.zeros((len(reference)+10, len(bases), len(targets)))
+        posmutmatrix = np.zeros((len(reference), len(bases), len(targets)))
     if meta == "location":
         m = 3
     elif meta == "variant":
@@ -26,6 +26,10 @@ def metasplitcounter(form, infile, meta, targets):
 
     targetcounts = [0]*len(targets)
 
+    numericreference =[]
+    for i in reference:
+        i = i.upper()
+        numericreference.append(bases.index(i))
     
     count = 0
     otherbases = []
@@ -45,13 +49,16 @@ def metasplitcounter(form, infile, meta, targets):
         else:
             if counting == True:
                 base = line[-2]
-                position = int(line[1:-2])
+                position = int(line[1:-2])-1
                 if position not in posns:
                     if base in bases:
                         row = position
                         col = bases.index(base)
-                        posmutmatrix[row,col,z] = posmutmatrix[row,col,z] + 1
-                        posns.append(position)
+                        try:
+                            posmutmatrix[row,col,z] = posmutmatrix[row,col,z] + 1
+                            posns.append(position)
+                        except:
+                            continue
                     else:
                         if base in otherbases:
                             continue
@@ -68,4 +75,8 @@ def metasplitcounter(form, infile, meta, targets):
             np.savetxt("Analysis/"+meta+"/"+targets[x]+"_"+str(targetcounts[x])+".csv", (posmutmatrix[:,:,x]/targetcounts[x]), delimiter=",")
         else:
             print("No sequences found for "+meta+" "+targets[x])
+    for v in range(0, len(targets)):
+        posmutmatrix[:,:,v] = posmutmatrix[:,:,v]/targetcounts[v]
+        for r in range(0, len(numericreference)):
+            posmutmatrix[r,numericreference[r],v] = 1 - sum(posmutmatrix[r,:,v])
     return(posmutmatrix)

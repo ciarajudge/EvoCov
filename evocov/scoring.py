@@ -43,6 +43,21 @@ def entropy(AA, NTtable):
     return codone
     
 
+def AAentropy(AA, NTtable):
+    ps = []
+    total = (sum(NTtable[AA,]) - NTtable[AA, 20]) - NTtable[AA, 21]
+    ranges = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,22]
+    for base in ranges:
+        p = NTtable[AA,base]/total
+        try:
+            plog = p*math.log(p)
+        except:
+            plog = 0
+        ps.append(plog)
+    entropy = -(sum(ps))
+    normentropy = entropy/math.log(21)
+    return normentropy
+
 def scoring(candidate, NTtable, VarTables, TimTables):
     AAscores = {
     "A":  5.0, "C":  7.0, "D":  10.0,
@@ -90,41 +105,38 @@ def scoring(candidate, NTtable, VarTables, TimTables):
     locationscore = RBDscore
     
     #Entropy
+    Last3mostable = TimTables[:,:,-1]+TimTables[:,:,-2]+TimTables[:,:,-3]
     entropies = []
     for x in indexes:
-        entropies.append(entropy(x, NTtable))
+        entropies.append(AAentropy(x, Last3mostable))
     entropies = mean(entropies)
     entropyscore = 65 - (65*entropies)
     
-    '''
+    
     #Uniform Entropy across Variants
     entropyvar = []
     for x in indexes:
         entropies = []
-        for v in range(0, np.size(VarTables, 2)):
-            ent = entropy(x, VarTables[:,:,v])
+        for v in range(0, (np.size(VarTables, 2))):    
+            ent = AAentropy(x, VarTables[:,:,v])
             entropies.append(ent)
         entropyvar.append(variance(entropies))
     entropyvariance = mean(entropyvar)
-    entropybyvariantscore = (1 - (entropyvariance/0.7))*5
-    print(entropybyvariantscore)
+    variantscore = (1 - (entropyvariance/0.7))*5
+  
     #Uniform Entropy across Time
-    entropytim = []
+    entropies = []
     for x in indexes:
-        entropies = []
-        for t in range(0, np.size(TimTables, 2)):
-            ent = entropy(x, TimTables[:,:,t])
-            entropies.append(ent)
-        entropytim.append(variance(entropies))
-    entropyvariance = mean(entropytim)
-    entropybytimescore = (1 - (entropyvariance/0.7))*5
-    print(entropybytimescore)
-    '''
-    totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore
-
+        entropies.append(AAentropy(x,NTtable))
+    entropies = mean(entropies)
+    timescore = 5 - (5*entropies)
+    
+    
+    totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore+timescore+variantscore
+        
     if totalscore > 50:
         AAs = "".join(AAs)
-        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, 0, 0, totalscore]
+        finallist = [AAs, (indexes+1), distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore]
         return finallist
     else:
         return "NA"

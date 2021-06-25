@@ -114,7 +114,7 @@ else:
     print("Round 1/4")
     numsequences = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
 if backdoor == True:
-    NTtable = genfromtxt('Data/AAdifffile.csv', delimiter=',')
+    NTtable = np.genfromtxt('Analysis/simplecountsAA.csv', delimiter=',')
 else:
     print("Round 2/4")
     NTtable = simplecounter("AA", AAfile, "Analysis/simplecountsAA.csv")
@@ -132,7 +132,7 @@ else:
     else:
         varguments = var.split(" ")
 print("Round 4/4")        
-vartables = metasplitcounter("NT", NTfile, "variant", varguments)
+vartables = metasplitcounter("AA", AAfile, "variant", varguments)
 
 
 #Scoring
@@ -143,17 +143,29 @@ for x in tqdm(candidates):
     score = scoring(x, NTtable, vartables, timtables)
     if score != "NA":
         scores.append(score)
+
 sortedscores = sorted(scores, key = itemgetter(9), reverse = True)
 with open("Analysis/scoredepitopes.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(sortedscores)
-    
+
+candidates = open("Data/slidingwindowcandidates.txt").readlines()
+scores = []
+for x in tqdm(candidates):
+    score = scoring(x, NTtable, vartables, timtables)
+    if score != "NA":
+        scores.append(score)
+
+sortedscores = sorted(scores, key = itemgetter(9), reverse = True)
+with open("Analysis/scoredslidingwindowepitopes.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerows(sortedscores)
+   
 
 #Download current case data for all countries and normalise
 print("Retrieving current case data for all countries from the WHO, this will be used to normalise the counts by country.\n")
 wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", ".")
 
-metasplitcounter("AA", AAfile, "variant", varguments)
 
 #Make PDF
 if default == True:

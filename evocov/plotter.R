@@ -494,10 +494,86 @@ text(1,0.6,as.character(round(as.numeric(epitopes[epitope,8]),2)), cex = 4, col 
 
 epitopezoom(locilist, "Data/spike_AA.txt", aatable)
 }
+
+#Page 6
+ranks = c("red","blue","yellow","green","purple")
+epitopes = suppressWarnings(read.csv("Analysis/scoredslidingwindowepitopes.csv", header = F))
+#residuedistances <- read.csv("residuedistances.csv")
+for (epitope in 1:5){
+  layout(matrix(c(1,2, 2, 3, 3,3,4, 5, 6, 7,8, 9,10,10,10), ncol = 3, byrow = T), heights = c(2.5,1,2,2,6))
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+  rect(0, 0, 2, 2, col = ranks[epitope])
+  text(1,1,as.character(epitope), cex = 7, col = "white", font = 2)
+  
+  sequence <- epitopes[epitope,1]
+  sequencelist <- unlist(str_split(sequence, ""))
+  loci <- epitopes[epitope, 2]
+  locilist <- unlist(str_split(loci, "\\["))[2]
+  locilist <- unlist(str_split(locilist, "\\]"))[1]
+  locilist <- unlist(str_split(locilist, ","))
+  
+  
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", yaxt = "n", ylim = c(0,5), xlim = c(0,length(sequencelist)+1))
+  for (i in 1:length(sequencelist)) {
+    x = i
+    text(i,4, sequencelist[i], cex = 3)
+    text(i,1.5, locilist[i], cex = 1.75)
+    lines(c(i,i), c(2,3))
+  }
+  
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+  text(1,1,paste0(c("Total Score: ", as.character(round(as.numeric(epitopes[epitope,10]),2))), collapse =""), cex = 3.5, font = 3)
+  
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+  rect(0, 0, 2, 2, col = "orange")
+  text(1,1.5,"Distance Score", cex = 2, col = "white")
+  text(1,0.6,as.character(round(as.numeric(epitopes[epitope,3]),2)), cex = 4, col = "white")
+  
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+  rect(0, 0, 2, 2, col = "limegreen")
+  text(1,1.5,"Length Score", cex = 2, col = "white")
+  text(1,0.6,as.character(round(as.numeric(epitopes[epitope,4]),2)), cex = 4, col = "white")
+  
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+  rect(0, 0, 2, 2, col = "slateblue")
+  text(1,1.5,"AA Score", cex = 2, col = "white")
+  text(1,0.6,as.character(round(as.numeric(epitopes[epitope,5]),2)), cex = 4, col = "white")
+  
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+  rect(0, 0, 2, 2, col = "blue4")
+  text(1,1.5,"Location Score", cex = 2, col = "white")
+  text(1,0.6,as.character(round(as.numeric(epitopes[epitope,6]),2)), cex = 4, col = "white")
+  
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+  rect(0, 0, 2, 2, col = "gold")
+  text(1,1.5,"Entropy Score", cex = 2, col = "white")
+  text(1,0.6,as.character(round(as.numeric(epitopes[epitope,7]),2)), cex = 4, col = "white")
+  
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+  rect(0, 0, 2, 2, col = "deeppink")
+  text(1,1.5,"Consistency Score", cex = 2, col = "white")
+  text(1,0.6,as.character(round(as.numeric(epitopes[epitope,8]),2)), cex = 4, col = "white")
+  
+  epitopezoom(locilist, "Data/spike_AA.txt", aatable)
+}
 dev.off()
+
+
 
 pdf(file = "Plots/ntstackedbar.pdf", width = 15, height = 4)
 par(mar = c(4,4,4,2))
 initialiseRBDNT("Frequency Mutated")
 stackedbarNT(nttable, "Data/spike_NT.txt", ntcounts)
 dev.off()
+
+
+

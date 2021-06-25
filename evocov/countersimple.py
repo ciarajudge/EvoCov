@@ -26,7 +26,7 @@ def simplecounter(form, infile, outfile):
             posns = []
         else:
             base = line[-2]
-            position = int(line[1:-2])
+            position = int(line[1:-2])-1
             if position not in posns:
                 if base in bases:
                     row = position
