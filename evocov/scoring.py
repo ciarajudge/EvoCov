@@ -133,10 +133,10 @@ def scoring(candidate, NTtable, VarTables, TimTables):
     
     
     totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore+timescore+variantscore
-        
+    indexes = [x+1 for x in indexes]
     if totalscore > 50:
         AAs = "".join(AAs)
-        finallist = [AAs, (indexes+1), distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore]
+        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore]
         return finallist
     else:
         return "NA"

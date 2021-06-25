@@ -138,9 +138,12 @@ epitopezoom <- function(epitopelist,reference,counts) {
       slices <- append(slices, i)
     }
   }
-  for (s in 1:length(slices)){
-    epitopelist <- c(epitopelist[1:(slices[s]+s-1)], "...", epitopelist[(slices[s]+s):length(epitopelist)])
+  if (length(slices)>0){
+    for (s in 1:length(slices)){
+      epitopelist <- c(epitopelist[1:(slices[s]+s-1)], "...", epitopelist[(slices[s]+s):length(epitopelist)])
+    }
   }
+
 
   table <- counts[numericepitopes,]
   maxs <- max(rowSums(table) - table[,21])
