@@ -490,7 +490,7 @@ par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
 rect(0, 0, 2, 2, col = "deeppink")
 text(1,1.5,"Consistency Score", cex = 2, col = "white")
-text(1,0.6,as.character(round(as.numeric(epitopes[epitope,8]),2)), cex = 4, col = "white")
+text(1,0.6,as.character(round((as.numeric(epitopes[epitope,8])+as.numeric(epitopes[epitope,9])),2)), cex = 4, col = "white")
 
 epitopezoom(locilist, "Data/spike_AA.txt", aatable)
 }
@@ -561,7 +561,7 @@ for (epitope in 1:5){
   plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
   rect(0, 0, 2, 2, col = "deeppink")
   text(1,1.5,"Consistency Score", cex = 2, col = "white")
-  text(1,0.6,as.character(round(as.numeric(epitopes[epitope,8]),2)), cex = 4, col = "white")
+  text(1,0.6,as.character(round((as.numeric(epitopes[epitope,8])+as.numeric(epitopes[epitope,9])),2)), cex = 4, col = "white")
   
   epitopezoom(locilist, "Data/spike_AA.txt", aatable)
 }
