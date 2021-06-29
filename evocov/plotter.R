@@ -281,7 +281,7 @@ for (var in varfiles) {
 }
 numvars <- length(variants)
 
-layout(matrix(c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7, 8, 9), ncol = 2, byrow = T), heights = c(1,0.8,4.2,1.5, 1, 4, 4))
+layout(matrix(c(1, 2, 3, 4, 5, 6), byrow = T), heights = c(1,0.8,4.4,1.5, 4.2,2))
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
 text(1,0.8,"Variant Wise Analysis", cex = 2)
@@ -290,7 +290,7 @@ text(1,1, paste0(c("The following results are using the variants ", paste0(varia
                    " which 
                    may have been selected by you or chosen by default by the pipeline"), collapse = ""))
 
-par(mar=c(4.5, 4.5, 3, 1))
+par(mar=c(4.5, 4.5, 3.5, 1))
 initialisespikeAA("Frequency Mutated",  1)
 Varcolors <- sample(brewer.pal(9,"Set1"), length(varfiles), replace = F)
 for (x in 1:length(varfiles)) {
@@ -307,57 +307,45 @@ documented by the CDC, and closer to 0 in other variants. For further clarity, t
 below for the receptor binding domain (in the interests of space). Ns have been included to provide evidence for 
 instances of amplicon dropping specific to some variants.")
 
-par(mar=c(0,0,0,0))
-plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
-text(1,1,"RBD Plots broken down by Variant", cex = 1.5, font =3)
+primerlocations <- read.csv("ARTICloci.csv", header = F)
+leftstarts <- c()
+leftends <- c()
+rightstarts <- c()
+rightends <- c()
+for (i in 1:nrow(primerlocations)){
+  type <- unlist(str_split(primerlocations[i,4], "_"))[3]
+  if (type == "LEFT"){
+    leftstarts <- as.numeric(append(leftstarts, primerlocations[i,2]- 21563)) 
+    leftends <- as.numeric(append(leftends, primerlocations[i,3]- 21563))
+  }
+  if (type == "RIGHT"){
+    rightstarts <- as.numeric(append(rightstarts, primerlocations[i,2]- 21563)) 
+    rightends <- as.numeric(append(rightends, primerlocations[i,3]- 21563))
+  }
+}
+leftends <-leftends/3
+leftstarts <- leftstarts/3
+rightstarts <- rightstarts/3
+rightends <- rightends/3
 
-graph <- 0
-
-if ((graph != numvars)) {
-  par(mar=c(4.5, 4.5, 3, 1))
-  graph <- graph + 1
-  initialiseRBDAA("Frequency Mutated", 1, paste0(c(variants[graph], ", based on ", counts[graph], " sequences"), collapse = ""))
-  addfromfile(paste0(c("Analysis/variant/", varfiles[graph]), collapse = ""), 
-              "l", 1, "black")
-} else {
-par(mar=c(0,0,0,0))
-plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+par(mar=c(4.5, 4.5, 2, 1))
+plot(c(0, 1273), c(0,0), ylim = c(0,1.2), pch=".")
+for (i in 1:109){
+  rect(leftstarts[i],0, leftends[i], 1.11, col = adjustcolor("green", alpha.f = 0.7), border =FALSE)
+  rect(rightstarts[i],0, rightends[i], 1.01, col = adjustcolor("red", alpha.f = 0.7), border =FALSE)
+  arrows(leftends[i], 1.1, leftends[i]+50, 1.1, col = "green", length = 0.1)
+  arrows(rightstarts[i], 1, rightstarts[i]-50, 1, col = "red", length = 0.1)
+}
+for (x in 1:length(varfiles)) {
+  addfromfile(paste0(c("Analysis/variant/",varfiles[x]), collapse = ""), "p", 1, Varcolors[x])
 }
 
-if ((graph != numvars)) {
-  par(mar=c(4.5, 4.5, 3, 1))
-  graph <- graph + 1
-  initialiseRBDAA("Frequency Mutated", 1, paste0(c(variants[graph], ", based on ", counts[graph], " sequences"), collapse = ""))
-  addfromfile(paste0(c("Analysis/variant/", varfiles[graph]), collapse = ""), 
-              "l", 1, "black")
-} else {
-  par(mar=c(0,0,0,0))
-  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
-}
 
-if ((graph != numvars)) {
-  par(mar=c(4.5, 4.5, 3, 1))
-  graph <- graph + 1
-  initialiseRBDAA("Frequency Mutated", 1, paste0(c(variants[graph], ", based on ", counts[graph], " sequences"), collapse = ""))
-  addfromfile(paste0(c("Analysis/variant/", varfiles[graph]), collapse = ""), 
-              "l", 1, "black")
-} else {
-  par(mar=c(0,0,0,0))
-  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
-}
 
-if ((graph != numvars)) {
-  par(mar=c(4.5, 4.5, 3, 1))
-  graph <- graph + 1
-  initialiseRBDAA("Frequency Mutated", 1, paste0(c(variants[graph], ", based on ", counts[graph], " sequences"), collapse = ""))
-  addfromfile(paste0(c("Analysis/variant/", varfiles[graph]), collapse = ""), 
-              "l", 1, "black")
-} else {
-  par(mar=c(0,0,0,0))
-  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
-}
+
 
 #Page 4
+graph <- 0
 while (graph != numvars) {
   layout(matrix(c(1,1, 2, 3, 4, 5, 6, 7, 8, 9), ncol = 2, byrow = T), heights = c(1,5,5,5,5))
   par(mar=c(0,0,0,0))
