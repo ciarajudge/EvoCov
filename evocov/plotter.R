@@ -67,7 +67,7 @@ stackedbarAA <- function(MutationTable, reference, counts) {
   spikeseq <- unlist(str_split(spikeseq, ""))
   spikeseq <- match(spikeseq, AAs)
   for (pos in 300:600) {
-    x <- pos-1
+    x <- pos
     y1 <- 0
     for (AA in 1:20) {
       color <- AAcolors[AA]
@@ -91,7 +91,7 @@ stackedbarAA2 <- function(MutationTable, reference, counts) {
   spikeseq <- unlist(str_split(spikeseq, ""))
   spikeseq <- match(spikeseq, AAs)
   for (pos in 300:600) {
-    x <- pos-1
+    x <- pos
     y1 <- 0
     for (AA in 1:20) {
       color <- AAcolors[AA]
