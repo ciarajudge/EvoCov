@@ -420,6 +420,9 @@ ranks = c("red","blue","yellow","green","purple")
 epitopes = suppressWarnings(read.csv("Analysis/scoredepitopes.csv", header = F))
 #residuedistances <- read.csv("residuedistances.csv")
 for (epitope in 1:5){
+if (nrow(epitopes)<epitope){
+  next
+}
 layout(matrix(c(1,2, 2, 3, 3,3,4, 5, 6, 7,8, 9,10,10,10), ncol = 3, byrow = T), heights = c(2.5,1,2,2,6))
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
@@ -486,11 +489,14 @@ text(1,0.6,as.character(round((as.numeric(epitopes[epitope,8])+as.numeric(epitop
 epitopezoom(locilist, "Data/spike_AA.txt", aatable)
 }
 
-#Page 6
+#Page 7
 ranks = c("red","blue","yellow","green","purple")
 epitopes = suppressWarnings(read.csv("Analysis/scoredslidingwindowepitopes.csv", header = F))
 #residuedistances <- read.csv("residuedistances.csv")
 for (epitope in 1:5){
+  if (nrow(epitopes)<epitope){
+    next
+  }
   layout(matrix(c(1,2, 2, 3, 3,3,4, 5, 6, 7,8, 9,10,10,10), ncol = 3, byrow = T), heights = c(2.5,1,2,2,6))
   par(mar=c(0,0,0,0))
   plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
