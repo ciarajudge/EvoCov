@@ -140,7 +140,7 @@ vartables = metasplitcounter("AA", AAfile, "variant", varguments)
 #Scoring
 print("\nLoading in and scoring epitope candidates\n")
 
-candidates = open("Data/candidates.txt").readlines()
+candidates = open("Data/vendruscolocandidates.txt").readlines()
 scores = []
 for x in tqdm(candidates):
     score = scoring(x, NTtable, vartables, timtables)
@@ -152,6 +152,7 @@ with open("Analysis/scoredepitopes.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(sortedscores)
 
+'''
 candidates = open("Data/slidingwindowcandidates.txt").readlines()
 scores = []
 for x in tqdm(candidates):
@@ -164,7 +165,7 @@ with open("Analysis/scoredslidingwindowepitopes.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(sortedscores)
    
-
+'''
 #Download current case data for all countries and normalise
 print("Retrieving current case data for all countries from the WHO, this will be used to normalise the counts by country.\n")
 wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", ".")

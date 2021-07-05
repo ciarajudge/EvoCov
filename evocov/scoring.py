@@ -128,15 +128,26 @@ def scoring(candidate, NTtable, VarTables, TimTables):
     entropies = []
     for x in indexes:
         entropies.append(AAentropy(x,NTtable))
-    entropies = mean(entropies)
-    timescore = 5 - (5*entropies)
+    entrop = mean(entropies)
+    timescore = 5 - (5*entrop)
+
+    #Flag multiple deletions
+    deletions = []
+    for x in indexes:
+        if NTtable[x, -1] > 0.000001:
+            deletions.append(x)
     
     
     totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore+timescore+variantscore
     indexes = [x+1 for x in indexes]
+    entropies = [str(x) for x in entropies]
+    if len(deletions) > 1:
+        deletions = [str(x) for x in deletions]
     if totalscore > 50:
         AAs = "".join(AAs)
-        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore]
+        sitewiseentropies = ",".join(entropies)
+        deletions = ",".join(deletions)
+        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore, sitewiseentropies, deletions]
         return finallist
     else:
         return "NA"
