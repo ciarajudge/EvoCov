@@ -106,10 +106,10 @@ def scoring(candidate, NTtable, VarTables, TimTables):
     
     #Entropy
     Last3mostable = TimTables[:,:,-1]+TimTables[:,:,-2]+TimTables[:,:,-3]
-    entropies = []
+    entro = []
     for x in indexes:
-        entropies.append(AAentropy(x, Last3mostable))
-    entropies = mean(entropies)
+        entro.append(AAentropy(x, Last3mostable))
+    entropies = mean(entro)
     entropyscore = 65 - (65*entropies)
     
     
@@ -134,19 +134,20 @@ def scoring(candidate, NTtable, VarTables, TimTables):
     #Flag multiple deletions
     deletions = []
     for x in indexes:
-        if NTtable[x, -1] > 0.000001:
+        if NTtable[x, -1] > 0.000005:
             deletions.append(x)
     
     
     totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore+timescore+variantscore
     indexes = [x+1 for x in indexes]
-    entropies = [str(x) for x in entropies]
+    entropies = [str(x) for x in entro]
     if len(deletions) > 1:
         deletions = [str(x) for x in deletions]
+        deletions = ",".join(deletions)
+    
     if totalscore > 50:
         AAs = "".join(AAs)
         sitewiseentropies = ",".join(entropies)
-        deletions = ",".join(deletions)
         finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore, sitewiseentropies, deletions]
         return finallist
     else:

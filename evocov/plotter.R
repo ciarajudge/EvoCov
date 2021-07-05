@@ -5,6 +5,96 @@ library(RColorBrewer)
 library(stringr)
 library(png)
 
+boxtext <- function(x, y, labels = NA, col.text = NULL, col.bg = NA, 
+                    border.bg = NA, adj = NULL, pos = NULL, offset = 0.5, 
+                    padding = c(0.5, 0.5), cex = 1, font = graphics::par('font')){
+  
+  ## The Character expansion factro to be used:
+  theCex <- graphics::par('cex')*cex
+  
+  ## Is y provided:
+  if (missing(y)) y <- x
+  
+  ## Recycle coords if necessary:    
+  if (length(x) != length(y)){
+    lx <- length(x)
+    ly <- length(y)
+    if (lx > ly){
+      y <- rep(y, ceiling(lx/ly))[1:lx]           
+    } else {
+      x <- rep(x, ceiling(ly/lx))[1:ly]
+    }       
+  }
+  
+  ## Width and height of text
+  textHeight <- graphics::strheight(labels, cex = theCex, font = font)
+  textWidth <- graphics::strwidth(labels, cex = theCex, font = font)
+  
+  ## Width of one character:
+  charWidth <- graphics::strwidth("e", cex = theCex, font = font)
+  
+  ## Is 'adj' of length 1 or 2?
+  if (!is.null(adj)){
+    if (length(adj == 1)){
+      adj <- c(adj[1], 0.5)            
+    }        
+  } else {
+    adj <- c(0.5, 0.5)
+  }
+  
+  ## Is 'pos' specified?
+  if (!is.null(pos)){
+    if (pos == 1){
+      adj <- c(0.5, 1)
+      offsetVec <- c(0, -offset*charWidth)
+    } else if (pos == 2){
+      adj <- c(1, 0.5)
+      offsetVec <- c(-offset*charWidth, 0)
+    } else if (pos == 3){
+      adj <- c(0.5, 0)
+      offsetVec <- c(0, offset*charWidth)
+    } else if (pos == 4){
+      adj <- c(0, 0.5)
+      offsetVec <- c(offset*charWidth, 0)
+    } else {
+      stop('Invalid argument pos')
+    }       
+  } else {
+    offsetVec <- c(0, 0)
+  }
+  
+  ## Padding for boxes:
+  if (length(padding) == 1){
+    padding <- c(padding[1], padding[1])
+  }
+  
+  ## Midpoints for text:
+  xMid <- x + (-adj[1] + 1/2)*textWidth + offsetVec[1]
+  yMid <- y + (-adj[2] + 1/2)*textHeight + offsetVec[2]
+  
+  ## Draw rectangles:
+  rectWidth <- textWidth + 2*padding[1]*charWidth
+  rectHeight <- textHeight + 2*padding[2]*charWidth    
+  graphics::rect(xleft = xMid - rectWidth/2, 
+                 ybottom = yMid - rectHeight/2, 
+                 xright = xMid + rectWidth/2, 
+                 ytop = yMid + rectHeight/2,
+                 col = col.bg, border = border.bg)
+  
+  ## Place the text:
+  graphics::text(xMid, yMid, labels, col = col.text, cex = theCex, font = font, 
+                 adj = c(0.5, 0.5))    
+  
+  ## Return value:
+  if (length(xMid) == 1){
+    invisible(c(xMid - rectWidth/2, xMid + rectWidth/2, yMid - rectHeight/2,
+                yMid + rectHeight/2))
+  } else {
+    invisible(cbind(xMid - rectWidth/2, xMid + rectWidth/2, yMid - rectHeight/2,
+                    yMid + rectHeight/2))
+  }    
+}
+
 n <- 22
 qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
 col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
@@ -436,14 +526,19 @@ locilist <- unlist(str_split(loci, "\\["))[2]
 locilist <- unlist(str_split(locilist, "\\]"))[1]
 locilist <- unlist(str_split(locilist, ","))
 
+entropylist <- unlist(str_split(epitopes[epitope, 11],","))
+for (x in 1:length(entropylist)){
+  entropylist[x]<-as.character(round(as.numeric(entropylist[x]),3))
+}
 
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", yaxt = "n", ylim = c(0,5), xlim = c(0,length(sequencelist)+1))
 for (i in 1:length(sequencelist)) {
   x = i
   text(i,4, sequencelist[i], cex = 3)
+  lines(c(i,i), c(2,3.5))
+  boxtext(i,2.75, entropylist[i], cex = 2, col.bg = "pink")
   text(i,1.5, locilist[i], cex = 1.75)
-  lines(c(i,i), c(2,3))
 }
 
 par(mar=c(0,0,0,0))
@@ -471,8 +566,13 @@ text(1,0.6,as.character(round(as.numeric(epitopes[epitope,5]),2)), cex = 4, col 
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
 rect(0, 0, 2, 2, col = "blue4")
-text(1,1.5,"Location Score", cex = 2, col = "white")
-text(1,0.6,as.character(round(as.numeric(epitopes[epitope,6]),2)), cex = 4, col = "white")
+if (epitopes[epitope, 12]=="[]"){
+  text(1,1.4,"0 residues", cex = 3, col = "white")
+}
+else{
+  text(1,1.4,epitopes[epitope,12], cex = 4, col = "white")
+}
+text(1,0.5,"Flagged for deletions", cex = 2, col = "white")
 
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
@@ -490,6 +590,7 @@ epitopezoom(locilist, "Data/spike_AA.txt", aatable)
 }
 
 #Page 7
+if (FALSE){
 ranks = c("red","blue","yellow","green","purple")
 epitopes = suppressWarnings(read.csv("Analysis/scoredslidingwindowepitopes.csv", header = F))
 #residuedistances <- read.csv("residuedistances.csv")
@@ -561,6 +662,7 @@ for (epitope in 1:5){
   text(1,0.6,as.character(round((as.numeric(epitopes[epitope,8])+as.numeric(epitopes[epitope,9])),2)), cex = 4, col = "white")
   
   epitopezoom(locilist, "Data/spike_AA.txt", aatable)
+}
 }
 dev.off()
 
