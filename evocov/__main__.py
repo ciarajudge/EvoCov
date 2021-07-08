@@ -20,12 +20,17 @@ import subprocess
 from itertools import repeat
 import operator
 from operator import itemgetter
+from evocov.epitopefrequencycalculator import freccalc
 
 backdoor = False
-if sys.argv[1] == "backdoor":
-    backdoor = True
-    default = True
-
+try:
+    if sys.argv[1] == "backdoor":
+        backdoor = True
+        default = True
+except:
+    backdoor = False
+    default = False
+    
 if backdoor == False:
 #Initialise
     if len(sys.argv) > 1:
@@ -62,7 +67,7 @@ if os.path.isfile("Data/"+NTfile):
             repeat = "skip"
             print("\nWe have detected an existing NT diff file, so this step will be skipped.\n")
         else:
-            repeat = "scratch"
+            repeat = "update"
             print("\nWe have detected an existing NT diff file, so existing sequences in the diff file will be catalogued and only new ones will be added.\n")
     else:
         repeat = input("\nThere is already a file with that name! Would you like to skip this step of the pipeline, completely rebuild this file from scratch, or update the file with any new sequences?(skip/scratch/update)\n")
@@ -126,11 +131,11 @@ timtables = metasplitcounter("AA", AAfile, "date", ["2019-12", "2020-01","2020-0
 
 if default == True:
     print("Because you are running on default, the variants used for this analysis will be those classified as VOC: B.1.1.7, B.1.351, B.1.427, B.1.429, P.1, B.1.617.2")
-    varguments = ["B.1.1.7", "B.1.351", "B.1.427", "B.1.429","P.1", "B.1.617.2"]
+    varguments = ["B.1.1.7", "B.1.351", "B.1.427", "B.1.429","P.1", "B.1.617.2",  "C.37"]
 else:
     var = input("Please enter the names of the variants you wish to use in this analysis separated by spaces. If you wish to proceed with the default variants (B.1.1.7, B.1.351, B.1.427, B.1.429, P.1, B.1.617.2), just press enter")
     if input == "":
-        varguments = ["B.1.1.7", "B.1.351", "B.1.427", "B.1.429","P.1", "B.1.617.2"]
+        varguments = ["B.1.1.7", "B.1.351", "B.1.427", "B.1.429","P.1", "B.1.617.2", "C.37"]
     else:
         varguments = var.split(" ")
 print("Round 4/4")        
@@ -152,7 +157,8 @@ with open("Analysis/scoredepitopes.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(sortedscores)
 
-'''
+freqcalc(NTfile, candidates, ['2021-07', '2021-06']
+         
 candidates = open("Data/slidingwindowcandidates.txt").readlines()
 scores = []
 for x in tqdm(candidates):
@@ -165,10 +171,10 @@ with open("Analysis/scoredslidingwindowepitopes.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(sortedscores)
    
-'''
+
 #Download current case data for all countries and normalise
 print("Retrieving current case data for all countries from the WHO, this will be used to normalise the counts by country.\n")
-wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", ".")
+wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", "WHOcasedata.csv")
 
 
 #Make PDF
