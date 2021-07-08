@@ -397,7 +397,7 @@ documented by the CDC, and closer to 0 in other variants. For further clarity, t
 below for the receptor binding domain (in the interests of space). Ns have been included to provide evidence for 
 instances of amplicon dropping specific to some variants.")
 
-primerlocations <- read.csv("ARTICloci.csv", header = F)
+primerlocations <- read.csv("Helpers/ARTICloci.csv", header = F)
 leftstarts <- c()
 leftends <- c()
 rightstarts <- c()
