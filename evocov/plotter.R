@@ -451,6 +451,7 @@ while (graph != numvars) {
 }
 
 #Page 5
+if (F){
 layout(matrix(c(1,1,2,2,3,3, 4, 5,6,6,7,7), ncol = 2, byrow = T), heights = c(1,0.5,3,6,0.5,4))
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
@@ -504,7 +505,7 @@ maximum value (0.7 approx).
 5 points - Consistency: The sequences are divided up by variant and date, and the average variance of the Shannon Entropy per nucleotide is
 calculated. Epitopes that do not see great changes in entropy across different variants and different points in time can earn up to 5 points.
      ", cex = 1)
-
+}
 #Page 6
 ranks = c("red","blue","yellow","green","purple")
 epitopes = suppressWarnings(read.csv("Analysis/scoredepitopes.csv", header = F))
@@ -587,6 +588,17 @@ text(1,1.5,"Consistency Score", cex = 2, col = "white")
 text(1,0.6,as.character(round((as.numeric(epitopes[epitope,8])+as.numeric(epitopes[epitope,9])),2)), cex = 4, col = "white")
 
 epitopezoom(locilist, "Data/spike_AA.txt", aatable)
+
+
+if (file.exists(paste0(c("Analysis/Epitopes/ByCountry/", sequence, ".csv"), collapse= ""))){
+  layout(matrix(c(1,2,3,4,5), ncol = 1, byrow = T), heights = c(1,3,3,3,3))
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+  text(1,0.8,"Mutability Analysis/Predicted Variants", cex = 2)
+  
+}
+
+
 }
 
 #Page 7

@@ -44,7 +44,7 @@ def freqcalc(infile, AAepitopes, dates):
             NTepitope.append(i*3)
         NTepitopes.append(NTepitope)
         NTwildtypes.append("".join([reference[x-1] for x in NTepitope]))
-        AAwildtypes.append("".join([reference[x-1] for x in AAepitope]))
+        AAwildtypes.append("".join([AAreference[x-1] for x in AAepitope]))
         epiversions.append(["".join([reference[x-1] for x in NTepitope])])
         epiversionscount.append([-1])
         bases.append([])
@@ -104,8 +104,9 @@ def freqcalc(infile, AAepitopes, dates):
             outfile2.write(epiversions[e][i]+","+str(epiversionscount[e][i]/sum(epiversionscount[e]))+"\n")
             
     countries =  open("Helpers/countries.txt", "r").readlines()
+    countries = [x.strip("\n") for x in countries]
     countrind = 0
-    epiversionscount = [[[] for j in countries] for i in range(len(NTwildtypes))]
+    epiversionscount = [[[0 for c in range(len(countries))] for j in range(len(epiversions[i]))] for i in range(len(NTwildtypes))]
     counting = False
     for line in tqdm(infile):
         if list(line)[0] == ">":
@@ -126,7 +127,7 @@ def freqcalc(infile, AAepitopes, dates):
             try:
                 country = line.split("|")[4].split("/")[1].strip()
             except:
-                country = line.split("|")[4]
+                country = line.split("|")[4].strip("\n")
 
             if country in countries:
                 countrind = countries.index(country)
@@ -156,16 +157,16 @@ def freqcalc(infile, AAepitopes, dates):
         os.makedirs("Analysis/Epitopes/ByCountry")
     for e in range(0, len(NTwildtypes)):
         outfile1 = open("Analysis/Epitopes/ByCountry/"+AAwildtypes[e]+".csv", "w")
-        for i in range(epiversions[e]):
-            outfile1.write(epiversions[e][i]+","+str(epiversionscount[e][i]).join(",")+"\n")
-
+        for i in range(len(epiversions[e])):
+            outfile1.write(epiversions[e][i]+",")
+            for c in range(len(countries)):
+                outfile1.write(str(epiversionscount[e][i][c])+",")
+            outfile1.write("\n")
+    
     countryoutfile = open("Helpers/countries.txt", "w")
     for x in countries:
         countryoutfile.write(x+"\n")
     
-
-freqcalc("difffile.txt", ["448,452,491,492,493,494,495,496,499,_10","352,353,354,355,356,357,358,_3", "502,503,504,505,508,509,510,511,_2"], ["2021-06"])
-
 
 
 
