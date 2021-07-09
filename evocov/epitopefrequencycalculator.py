@@ -117,12 +117,12 @@ def freqcalc(infile, AAepitopes, dates):
                     ind = epiversions[e].index(epi)
                     epiversionscount[e][ind][countrind] += 1
 
-            date = line.split("|")[1].strip()
-            date = "-".join(date.split("-")[0:2])
-            if date in dates:
-                counting = True
-            else:
-                counting = False
+            #date = line.split("|")[1].strip()
+            #date = "-".join(date.split("-")[0:2])
+            #if date in dates:
+            counting = True
+            #else:
+            #    counting = False
             
             try:
                 country = line.split("|")[4].split("/")[1].strip()
@@ -153,10 +153,10 @@ def freqcalc(infile, AAepitopes, dates):
                         posns[e].append(NTepitopes[e].index(position))
                         bases[e].append(base)
 
-    if not os.path.isdir("Analysis/Epitopes/ByCountry"):
-        os.makedirs("Analysis/Epitopes/ByCountry")
+    if not os.path.isdir("Analysis/Epitopes/ByCountryWP"):
+        os.makedirs("Analysis/Epitopes/ByCountryWP")
     for e in range(0, len(NTwildtypes)):
-        outfile1 = open("Analysis/Epitopes/ByCountry/"+AAwildtypes[e]+".csv", "w")
+        outfile1 = open("Analysis/Epitopes/ByCountryWP/"+AAwildtypes[e]+".csv", "w")
         for i in range(len(epiversions[e])):
             outfile1.write(epiversions[e][i]+",")
             for c in range(len(countries)):
@@ -169,7 +169,7 @@ def freqcalc(infile, AAepitopes, dates):
     
 
 
-
+freqcalc("difffile.txt", ["448,452,491,492,493,494,495,496,499,_10","352,353,354,355,356,357,358,_3"], ['2021-07', '2021-06'])
 
 
 

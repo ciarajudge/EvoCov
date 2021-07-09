@@ -8,10 +8,8 @@ library(png)
 boxtext <- function(x, y, labels = NA, col.text = NULL, col.bg = NA, 
                     border.bg = NA, adj = NULL, pos = NULL, offset = 0.5, 
                     padding = c(0.5, 0.5), cex = 1, font = graphics::par('font')){
-  
   ## The Character expansion factro to be used:
   theCex <- graphics::par('cex')*cex
-  
   ## Is y provided:
   if (missing(y)) y <- x
   
