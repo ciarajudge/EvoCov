@@ -16,7 +16,10 @@ def seqparser(filepath, metadata, otfile, complete):
     reference = list(reference[0].lower())
     dictionary = {item[2]:item[3:5]+item[10:12] for item in metadata}
     with open(filepath, mode = "r") as handle:
-        outfile = open("Data/"+otfile, "a")
+        if len(complete) < 1:
+            outfile = open("Data/"+otfile, "w")
+        else:
+            outfile = open("Data/"+otfile, "a")
         errorfile = open("Data/misaligned.txt", "w")
         bases = ["a","c","t","g","n","-"]
         count = 0
