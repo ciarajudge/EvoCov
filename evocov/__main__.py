@@ -27,6 +27,9 @@ try:
     if sys.argv[1] == "backdoor":
         backdoor = True
         default = True
+    else:
+        backdoor = False
+        default = True
 except:
     backdoor = False
     default = False
@@ -67,7 +70,7 @@ if os.path.isfile("Data/"+NTfile):
             repeat = "skip"
             print("\nWe have detected an existing NT diff file, so this step will be skipped.\n")
         else:
-            repeat = "update"
+            repeat = "scratch"
             print("\nWe have detected an existing NT diff file, so existing sequences in the diff file will be catalogued and only new ones will be added.\n")
     else:
         repeat = input("\nThere is already a file with that name! Would you like to skip this step of the pipeline, completely rebuild this file from scratch, or update the file with any new sequences?(skip/scratch/update)\n")
