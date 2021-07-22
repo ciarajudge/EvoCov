@@ -29,11 +29,13 @@ for f in range(0, len(files)):
     outfiles[f].write(" 1000 3822\n")
 
 counts = [0,0,0,0,0,0,0,0,0,0]
+totalcounts = 0
 filepath = "2021-07-21_unmasked.fa"
 with open(filepath, mode = "r") as handle:
     for record in tqdm(SeqIO.parse(handle, 'fasta')):
         accession = record.id
         if accession in set(allaccessions):
+            totalcounts += 1
             for f in range(0, len(files)):
                 if accession in accessions[f]:
                     counts[f] += 1
@@ -43,9 +45,10 @@ with open(filepath, mode = "r") as handle:
                     outfiles[f].write(sequence+"\n")
 
 print(counts)
+print(totalcounts)
 
 treefiles = os.listdir("trees")
-#treefiles.remove(".DS_Store")
+treefiles.remove(".DS_Store")
 
 for f in treefiles:
     tree = open("trees/"+f, "r").readlines()[0]
