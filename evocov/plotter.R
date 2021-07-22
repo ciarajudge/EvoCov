@@ -589,11 +589,56 @@ epitopezoom(locilist, "Data/spike_AA.txt", aatable)
 
 
 if (file.exists(paste0(c("Analysis/Epitopes/ByCountry/", sequence, ".csv"), collapse= ""))){
-  layout(matrix(c(1,2,3,4,5), ncol = 1, byrow = T), heights = c(1,3,3,3,3))
+  epitopecounts <- read.csv(paste0(c("Analysis/Epitopes/ByCountry/", sequence, ".csv"), collapse= ""), header = F)
+  epitopeversions <- epitopecounts[,1]
+  epitopecounts <- epitopecounts[,2:ncol(epitopecounts)]
+  epitopecounts <- rbind.data.frame(epitopecounts, colSums(epitopecounts))
+  epitopecounts <- rbind.data.frame(epitopecounts, rep(0, ncol(epitopecounts)))
+  load("Helpers/countrydict.RData")
+  WHOdata <- read.csv("WHOcasedata.csv")
+  countries <- readLines("Helpers/countries.txt")
+  for (i in 2:nrow(WHOdata)){
+    breaking <- F
+    WHOcountry <- WHOdata[i, 1]
+    GISAIDcountry <- suppressWarnings(dictionary[[WHOcountry]])
+    ColumnNo <- match(GISAIDcountry, countries)
+    if (is.null(GISAIDcountry)){
+      next
+    }
+    epitopecounts[nrow(epitopecounts), ColumnNo] <- epitopecounts[nrow(epitopecounts), ColumnNo] + WHOdata[i,5]*4
+  }
+  epitopecounts <- epitopecounts[unlist(epitopecounts[nrow(epitopecounts), ]) != 0]
+  epitopecounts <- epitopecounts[unlist(epitopecounts[nrow(epitopecounts)-1, ]) != 0]
+  epitopematrix <- matrix(0, nrow = nrow(epitopecounts)-2, ncol = ncol(epitopecounts)+1)
+  for (j in 1:(ncol(epitopecounts))){
+    for (i in 1:(nrow(epitopecounts)-2)){
+      if (epitopecounts[(nrow(epitopecounts)-1),j] != 0){
+        epitopematrix[i,j] <- (epitopecounts[i,j]/epitopecounts[nrow(epitopecounts)-1,j])*epitopecounts[nrow(epitopecounts),j]
+      }
+      else {
+        epitopematrix[i,j] <- 0
+      }
+    }
+  }
+  epitopematrix[,ncol(epitopematrix)] <- rowSums(epitopematrix)
+  layout(matrix(c(1,1,2,3,4,5), ncol = 2, byrow = T), heights = c(1,0.5,8))
   par(mar=c(0,0,0,0))
   plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
   text(1,0.8,"Mutability Analysis/Predicted Variants", cex = 2)
-  
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+  text(1,1,"Variations of the Epitope (whole pandemic) and 
+their Normalised Global Frequency in the Last Month", cex = 1.3, font = 3)
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+  text(1,0.8,"XXX", cex = 2)
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", yaxt = "n", ylim = c(0.5,length(epitopeversions)+0.5), xlim = c(0,5))
+  startpoint <- ((length(sequencelist) - 7)*0.1) + 3
+  for (i in 1:length(epitopeversions)) {
+    y = length(epitopeversions) - i + 0.5
+    text(1.5,y, epitopeversions[i], cex = 1)
+    lines(c(startpoint,4.15), c(y,y))
+    text(4.5,y, as.character(round((epitopematrix[i, ncol(epitopematrix)])/sum(epitopematrix[,ncol(epitopematrix)]), 3)), cex = 1)
+  }
 }
 
 
