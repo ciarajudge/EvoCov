@@ -156,11 +156,13 @@ for x in tqdm(candidates):
         scores.append(score)
 
 sortedscores = sorted(scores, key = itemgetter(9), reverse = True)
+
+freqcalc(NTfile, candidates, ['2021-07'])
+
 with open("Analysis/scoredepitopes.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(sortedscores)
 
-freqcalc(NTfile, candidates, ['2021-07', '2021-06'])
 
 '''         
 candidates = open("Data/slidingwindowcandidates.txt").readlines()
