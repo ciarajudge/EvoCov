@@ -41,10 +41,10 @@ with open(filepath, mode = "r") as handle:
                 if accession in accessions[f]:
                     coveredacc.append(accession)
                     counts[f] += 1
-                    outfiles[f].write(accession+"  \n")
+                    outfiles[f].write("\n"+accession+"  ")
                     sequence = list(record.seq)[21562:25384]
                     sequence = "".join(sequence)
-                    outfiles[f].write(sequence+"\n\n")
+                    outfiles[f].write(sequence+"\n")
 
 print(counts)
 print(totalcounts)
@@ -56,7 +56,7 @@ for x in allaccessions:
 
 
 treefiles = os.listdir("trees")
-treefiles.remove(".DS_Store")
+#treefiles.remove(".DS_Store")
 
 for f in treefiles:
     tree = open("trees/"+f, "r").readlines()[0]
@@ -74,6 +74,10 @@ for i in range(0, len(files)):
     for line in infile:
         outfile.write(line.replace("SEQUENCES", outfilenames[i]).replace("TREEFILE", treefiles[i]))
     outfile.close()
-    subprocess.call("paml/bin/baseml", shell = True)
-    subprocess.call("Rscript harvestrates.R", shell = True)
+    try:
+        subprocess.call("paml/bin/baseml", shell = True)
+        subprocess.call("Rscript harvestrates.R", shell = True)
+    except:
+        continue
+
 
