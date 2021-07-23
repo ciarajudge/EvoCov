@@ -2,7 +2,7 @@ library(ape)
 
 tree <- read.tree("global.tree")
 
-for (i in 1:10){
+for (i in 1:3){
   labelsample <- sample(tree$tip.label, 500)
   subsettedtree <- keep.tip(tree, labelsample)
   write.tree(subsettedtree, paste0(c("trees/sampledtree",as.character(i),".nhx"), collapse = ""))

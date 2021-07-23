@@ -26,10 +26,11 @@ outfilenames = []
 for f in range(0, len(files)):
     outfiles.append(open("sequences/seqs"+str(f+1)+".nuc", "w"))
     outfilenames.append("sequences/seqs"+str(f+1)+".nuc")
-    outfiles[f].write(" 1000 3822\n")
+    outfiles[f].write(" 1000 3822\n\n")
 
 counts = [0,0,0,0,0,0,0,0,0,0]
 totalcounts = 0
+coveredacc = []
 filepath = "2021-07-21_unmasked.fa"
 with open(filepath, mode = "r") as handle:
     for record in tqdm(SeqIO.parse(handle, 'fasta')):
@@ -38,14 +39,21 @@ with open(filepath, mode = "r") as handle:
             totalcounts += 1
             for f in range(0, len(files)):
                 if accession in accessions[f]:
+                    coveredacc.append(accession)
                     counts[f] += 1
-                    outfiles[f].write(accession+"\n")
+                    outfiles[f].write(accession+"  \n")
                     sequence = list(record.seq)[21562:25384]
                     sequence = "".join(sequence)
-                    outfiles[f].write(sequence+"\n")
+                    outfiles[f].write(sequence+"\n\n")
 
 print(counts)
 print(totalcounts)
+
+for x in allaccessions:
+    if x not in coveredacc:
+        print(x)
+
+
 
 treefiles = os.listdir("trees")
 treefiles.remove(".DS_Store")
