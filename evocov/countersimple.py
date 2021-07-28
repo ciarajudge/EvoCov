@@ -20,11 +20,16 @@ def simplecounter(form, infile, outfile):
 
     count = 0
     otherbases = []
+    subpernuc = 0
+    subs = 0
     for line in tqdm(infile):
         if list(line)[0] == ">":
             count += 1
             posns = []
+            subpernuc += subs/len(reference)
+            subs = 0
         else:
+            subs += 1
             base = line[-2]
             position = int(line[1:-2])-1
             if position not in posns:
@@ -38,10 +43,11 @@ def simplecounter(form, infile, outfile):
                         continue
                     else:
                         otherbases.append(base)
-
+                        
+    subpernucpercase = subpernuc / count
     np.savetxt(outfile, (posmutmatrix/count), delimiter=",")
     if form == "AA":
         return(posmutmatrix/count)
     if form == "NT":
-        return count
+        return [count, subpernucpercase]
 

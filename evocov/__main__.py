@@ -122,7 +122,9 @@ if backdoor == True:
     numsequences = 100
 else:
     print("Round 1/4")
-    numsequences = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
+    NTcounting = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
+    numsequences = NTcounting[0]
+    mutrate = NTcounting[1]
 if backdoor == True:
     NTtable = np.genfromtxt('Analysis/simplecountsAA.csv', delimiter=',')
 else:
