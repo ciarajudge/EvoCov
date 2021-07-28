@@ -26,7 +26,7 @@ outfilenames = []
 for f in range(0, len(files)):
     outfiles.append(open("sequences/seqs"+str(f+1)+".nuc", "w"))
     outfilenames.append("sequences/seqs"+str(f+1)+".nuc")
-    outfiles[f].write(" 1000 3822\n\n")
+    outfiles[f].write(" 300 3822\n\n")
 
 counts = [0,0,0,0,0,0,0,0,0,0]
 totalcounts = 0
@@ -61,7 +61,7 @@ treefiles = os.listdir("trees")
 for f in treefiles:
     tree = open("trees/"+f, "r").readlines()[0]
     outfile = open("trees/"+f, "w")
-    outfile.write(" 1000 1\n")
+    outfile.write(" 300 1\n")
     tree = re.sub("\\).\\....:", "):", tree)
     tree = re.sub("\\).\\....;", ");", tree)
     outfile.write(tree)
@@ -72,7 +72,7 @@ for i in range(0, len(files)):
     infile = open("basemltemplate.ctl", "r").readlines()
     outfile = open("baseml.ctl", "w")
     for line in infile:
-        outfile.write(line.replace("SEQUENCES", outfilenames[i]).replace("TREEFILE", treefiles[i]))
+        outfile.write(line.replace("SEQUENCES", outfilenames[i]).replace("TREEFILE", treefiles[len(treefiles)-i-1]))
     outfile.close()
     try:
         subprocess.call("paml/bin/baseml", shell = True)

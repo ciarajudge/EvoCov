@@ -40,7 +40,7 @@ def entropy(AA, NTtable):
         entropy = -(A+C+T+G+Gap)
         e.append(entropy/math.log(5))
     codone = mean(e)
-    return codone
+    return e
     
 
 def AAentropy(AA, NTtable):
@@ -58,7 +58,7 @@ def AAentropy(AA, NTtable):
     normentropy = entropy/math.log(21)
     return normentropy
 
-def scoring(candidate, NTtable, VarTables, TimTables):
+def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, mutrate):
     AAscores = {
     "A":  5.0, "C":  7.0, "D":  10.0,
     "E": 10.0, "F": 5.0, "G":  5.0,
@@ -70,6 +70,8 @@ def scoring(candidate, NTtable, VarTables, TimTables):
     }
     reference = open("Data/spike_AA.txt", "r").readlines()
     reference = list(reference[0])
+    NTreference = open("Data/spike_NT.txt", "r").readlines()
+    NTreference = list(reference[0])
     indexs = (candidate.split(",_")[0].split(","))
     indexes = []
     AAs = []
@@ -144,11 +146,56 @@ def scoring(candidate, NTtable, VarTables, TimTables):
     if len(deletions) > 1:
         deletions = [str(x) for x in deletions]
         deletions = ",".join(deletions)
+
+
+    #######Comparison of NT>NT mutation rates at each position to the baseline#########
+    MutRateDict = {'A>C':0.039*mutrate, 'A>G':0.310*mutrate, 'A>T':0.123*mutrate,
+                   'C>A':0.140*mutrate, 'C>G':0.022*mutrate, 'C>T':3.028*mutrate,
+                   'G>A':0.747*mutrate, 'G>C':0.113*mutrate, 'G>T':2.953*mutrate,
+                   'T>A':0.056*mutrate, 'T>C':0.261*mutrate, 'T>G':0.036*mutrate}
+    MutRateDict2 = {'A>C':0.039, 'A>G':0.310, 'A>T':0.123,
+                   'C>A':0.140, 'C>G':0.022, 'C>T':3.028,
+                   'G>A':0.747, 'G>C':0.113, 'G>T':2.953,
+                   'T>A':0.056, 'T>C':0.261, 'T>G':0.036}
+
+    NTentropies = []
+    NTposns = []
+    NTs = []
+    for x in indexes:
+        result = entropy(x, AccNTtable)
+        for y in result:
+            NTentropies.append(y)
+        for i in range(x*3, (x*3)+4):
+            print(i)
+            NTposns.append(i)
+            NTs.append(NTreference[i])
+    
+    
+    maximumentropy = max(NTentropies)
+    minentropyindex = NTentropies.index(maximumentropy)
+    riskpos = NTposns[minentropyindex]
+    riskAA = NTs[minentropyindex]
+    
+    bases = ["A","C","T","G","N","-"]
+    highest = -math.inf
+    for x in range(0,4):
+        if bases[x] == riskAA:
+            continue
+        else:
+            observed = AccNTtable[riskpos,x]
+            mutation = riskAA+">"+bases[x]
+            expected = MutRateDict[mutation]
+            if (observed - expected) > highest:
+                highest = observed-expected
+                likelymut = str(riskpos)+">"+bases[x]
+            
+
+
     
     if totalscore > 50:
         AAs = "".join(AAs)
         sitewiseentropies = ",".join(entropies)
-        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore, sitewiseentropies, deletions]
+        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore, sitewiseentropies, deletions, likelymut]
         return finallist
     else:
         return "NA"

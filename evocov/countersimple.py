@@ -45,6 +45,7 @@ def simplecounter(form, infile, outfile):
                         otherbases.append(base)
                         
     subpernucpercase = subpernuc / count
+    print(subpernucpercase)
     np.savetxt(outfile, (posmutmatrix/count), delimiter=",")
     if form == "AA":
         return(posmutmatrix/count)
