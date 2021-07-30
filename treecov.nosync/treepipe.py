@@ -9,7 +9,7 @@ from operator import add
 success = 0
 
 try:
-    for rep in range(0, 1):
+    for rep in range(0, 10):
         subprocess.call("Rscript subsampletree.R", shell = True)
     
         files = os.listdir("labels")
@@ -54,6 +54,9 @@ try:
         print(counts)
         print(totalcounts)
 
+        for f in outfiles:
+            f.close()
+
         for x in allaccessions:
             if x not in coveredacc:
                 print(x)
@@ -61,7 +64,8 @@ try:
 
 
         treefiles = os.listdir("trees")
-        #treefiles.remove(".DS_Store")
+        if ".DS_Store" in treefiles:
+            treefiles.remove(".DS_Store")
 
         for f in treefiles:
             tree = open("trees/"+f, "r").readlines()[0]
@@ -76,20 +80,22 @@ try:
         for i in range(0, len(files)):
             if counts[i] < numseqs:
                 continue
-            success += 1
+            
             infile = open("basemltemplate.txt", "r").readlines()
             outfile = open("baseml"+str(i)+".ctl", "w")
             for line in infile:
                 outfile.write(line.replace("SEQUENCES", "sequences/seqs"+str(i+1)+".nuc").replace("TREEFILE", "sampledtree"+str(i+1)+".nhx"))
             outfile.close()
-            '''
+            
             try:
-                x = input("BASEML TIME")
-                if x == "success":
+                subprocess.call("paml/bin/baseml", shell = True)
+                if os.path.isfile("rates"):
+                    success += 1
                     subprocess.call("Rscript harvestrates.R", shell = True)
+                    subprocess.call("rm rates", shell = True)
             except:
                 continue
-            '''
+            
 
     print(success)
     
