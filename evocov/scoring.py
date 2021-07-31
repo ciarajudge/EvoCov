@@ -10,7 +10,7 @@ from statistics import variance
 
 def entropy(AA, NTtable):
     e = []
-    for nt in range(AA*3, (AA*3)+4):
+    for nt in range((AA*3)-3, (AA*3)):
         total = NTtable[nt,0]+NTtable[nt,1]+NTtable[nt,2]+NTtable[nt,3]+NTtable[nt,5]
         pA = NTtable[nt,0]/total
         pC = NTtable[nt,1]/total
@@ -84,7 +84,7 @@ def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, mutrate):
     "S":  8.0, "T":  8.0, "V": 5.0,
     "W": 5.0, "Y": 5.0,
     }
-    reference = open("Data/spike_AA.txt", "r").readlines()
+    reference = open("Data/spikeAAcopy.txt", "r").readlines()
     reference = list(reference[0])
     NTreference = open("Data/spike_NT.txt", "r").readlines()
     NTreference = list(NTreference[0])
@@ -181,13 +181,13 @@ def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, mutrate):
         result = entropy(x, AccNTtable)
         for y in result:
             NTentropies.append(y)
-        for i in range(((x+1)*3)-3, ((x+1)*3)):
+        for i in range((x*3)-3, (x*3)):
             NTposns.append(i)
             NTs.append(NTreference[i])
-        
     bases = ["A","C","T","G"]
     predmut = False
     spentpos = []
+    print("".join(AAs))
     print("".join(NTs))
     while predmut == False:
         maximumentropy = max(NTentropies)
@@ -227,7 +227,8 @@ def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, mutrate):
             
             if codondict[oldcodon] != codondict[newcodon]:
                 predmut = True
-                likelymut = codondict[oldcodon]+">"+str(riskpos)+">"+codondict[newcodon]
+                likelymutAA = codondict[oldcodon]+">"+str(round((riskpos-1)/3)+1)+">"+codondict[newcodon]
+                likelymutNT = NTreference[riskpos]+">"+str(riskpos+1)+">"+sub
                 spentNTs = ["A","C","T"]
             else:
                 predmut = False
@@ -239,7 +240,7 @@ def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, mutrate):
     if totalscore > 50:
         AAs = "".join(AAs)
         sitewiseentropies = ",".join(entropies)
-        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore, sitewiseentropies, deletions, likelymut]
+        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore, sitewiseentropies, deletions, likelymutNT, likelymutAA]
         return finallist
     else:
         return "NA"
