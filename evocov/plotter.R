@@ -130,6 +130,11 @@ initialisespikeAA <- function(ylabel, type) {
     limit = 1
     addition2 <- 0.05
   }
+  if (type == 2) {
+    ylimit = 1.2
+    limit = 1
+    addition2 <- 0.4
+  }
   plot(c(1, 1273), c(0, 0), ylim = c(0, (ylimit)), ylab = ylabel, pch = ".", xlab = "locus (by codon)", xaxs="i", yaxs="i")
   rect(13, 0, 304, limit, 
        col = adjustcolor("red", alpha.f = 0.2), border = NA)
@@ -418,6 +423,7 @@ rightends <- rightends/3
 
 par(mar=c(4.5, 4.5, 2, 1))
 plot(c(0, 1273), c(0,0), ylim = c(0,1.2), pch=".")
+initialisespikeAA("Frequency Mutated")
 for (i in 1:109){
   rect(leftstarts[i],0, leftends[i], 1.11, col = adjustcolor("green", alpha.f = 0.7), border =FALSE)
   rect(rightstarts[i],0, rightends[i], 1.01, col = adjustcolor("red", alpha.f = 0.7), border =FALSE)
