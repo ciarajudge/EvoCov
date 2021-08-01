@@ -422,16 +422,16 @@ rightstarts <- rightstarts/3
 rightends <- rightends/3
 
 par(mar=c(4.5, 4.5, 2, 1))
-plot(c(0, 1273), c(0,0), ylim = c(0,1.2), pch=".")
-initialisespikeAA("Frequency Mutated")
+plot(c(0, 1273), c(0,0), ylim = c(0,1.07), pch=".", ylab = "Frequency Mutated", xlab = "Locus (by codon)")
+#initialisespikeAA("Frequency Mutated",2)
 for (i in 1:109){
-  rect(leftstarts[i],0, leftends[i], 1.11, col = adjustcolor("green", alpha.f = 0.7), border =FALSE)
+  rect(leftstarts[i],0, leftends[i], 1.06, col = adjustcolor("green", alpha.f = 0.7), border =FALSE)
   rect(rightstarts[i],0, rightends[i], 1.01, col = adjustcolor("red", alpha.f = 0.7), border =FALSE)
-  arrows(leftends[i], 1.1, leftends[i]+50, 1.1, col = "green", length = 0.1)
+  arrows(leftends[i], 1.05, leftends[i]+50, 1.05, col = "green", length = 0.1)
   arrows(rightstarts[i], 1, rightstarts[i]-50, 1, col = "red", length = 0.1)
 }
 for (x in 1:length(varfiles)) {
-  addfromfile(paste0(c("Analysis/variant/",varfiles[x]), collapse = ""), "p", 1, Varcolors[x])
+  addfromfile(paste0(c("Analysis/variant/",varfiles[x]), collapse = ""), "p", 19, Varcolors[x])
 }
 
 
