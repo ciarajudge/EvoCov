@@ -58,7 +58,87 @@ def AAentropy(AA, NTtable):
     normentropy = entropy/math.log(21)
     return normentropy
 
-def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, mutrate):
+def selectioncoefficient(timtables, row, col):
+    looking = True
+    for t in range(0, (np.size(timtables, 2))):
+        if looking == True:
+            if timtables[row,col,t] == 0:
+                continue
+            else:
+                t1 = t
+                p0 = timtables[row,col,t]
+                q0 = 1-p0
+                looking = False
+    pt = timtables[row,col,(np.size(timtables, 2))-1]
+    qt = 1-pt
+    t = ((np.size(timtables, 2)) - (t1 + 1))*4
+    print(p0)
+    print(pt)
+    print(q0)
+    print(qt)
+    s = (1/t)*math.log((pt*q0)/(qt*p0))
+    return s
+
+def mutbyneutrate(NTentropies, NTposns, NTs):
+    MutRateDict = {'A>C':0.039*mutrate, 'A>G':0.310*mutrate, 'A>T':0.123*mutrate,
+                   'C>A':0.140*mutrate, 'C>G':0.022*mutrate, 'C>T':3.028*mutrate,
+                   'G>A':0.747*mutrate, 'G>C':0.113*mutrate, 'G>T':2.953*mutrate,
+                   'T>A':0.056*mutrate, 'T>C':0.261*mutrate, 'T>G':0.036*mutrate}
+    MutRateDict2 = {'A>C':0.039, 'A>G':0.310, 'A>T':0.123,
+                   'C>A':0.140, 'C>G':0.022, 'C>T':3.028,
+                   'G>A':0.747, 'G>C':0.113, 'G>T':2.953,
+                   'T>A':0.056, 'T>C':0.261, 'T>G':0.036}
+    predmut = False
+    spentpos = []
+    bases = ["A","C","T","G"]
+    while predmut == False:
+        maximumentropy = max(NTentropies)
+        minentropyindex = NTentropies.index(maximumentropy)
+        riskpos = NTposns[minentropyindex]
+        riskAA = NTs[minentropyindex]
+        spentNTs = []
+        while len(spentNTs) != 3:
+            highest = -math.inf
+            for x in range(0,4):
+                if bases[x] == riskAA:
+                    continue
+                if bases[x] in spentNTs:
+                    continue
+                else:
+                    observed = AccNTtable[riskpos,x]
+                    mutation = riskAA+">"+bases[x]
+                    expected = MutRateDict[mutation]
+                    if (observed - expected) > highest:
+                        highest = observed-expected
+                        sub = bases[x]
+            if round((riskpos % 3), 2) == 0:
+                print("pos1")
+                oldcodon = NTreference[riskpos]+NTreference[riskpos+1]+NTreference[riskpos+2]
+                newcodon = sub+NTreference[riskpos+1]+NTreference[riskpos+2]
+            elif round((riskpos % 3), 2) == 1:
+                print("pos2")
+                oldcodon = NTreference[riskpos-1]+NTreference[riskpos]+NTreference[riskpos+1]
+                newcodon = NTreference[riskpos-1]+sub+NTreference[riskpos+1]
+            elif round((riskpos % 3), 2) == 2:
+                print("pos3")
+                oldcodon = NTreference[riskpos-2]+NTreference[riskpos-1]+NTreference[riskpos]
+                newcodon = NTreference[riskpos-2]+NTreference[riskpos-1]+sub
+            
+            if codondict[oldcodon] != codondict[newcodon]:
+                predmut = True
+                likelymutAA = codondict[oldcodon]+">"+str(round((riskpos-1)/3)+1)+">"+codondict[newcodon]
+                likelymutNT = NTreference[riskpos]+">"+str(riskpos+1)+">"+sub
+                spentNTs = ["A","C","T"]
+            else:
+                predmut = False
+                spentNTs.append(sub)
+        NTentropies.remove(maximumentropy)
+        NTposns.remove(riskpos)
+        NTs.remove(riskAA)
+    return [likelymutAA, likelymutNT]
+        
+
+def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, timtables2, mutrate):
     codondict = {'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
     'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
     'AAC':'N', 'AAT':'N', 'AAA':'K', 'AAG':'K',
@@ -165,14 +245,7 @@ def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, mutrate):
 
 
     #######Comparison of NT>NT mutation rates at each position to the baseline#########
-    MutRateDict = {'A>C':0.039*mutrate, 'A>G':0.310*mutrate, 'A>T':0.123*mutrate,
-                   'C>A':0.140*mutrate, 'C>G':0.022*mutrate, 'C>T':3.028*mutrate,
-                   'G>A':0.747*mutrate, 'G>C':0.113*mutrate, 'G>T':2.953*mutrate,
-                   'T>A':0.056*mutrate, 'T>C':0.261*mutrate, 'T>G':0.036*mutrate}
-    MutRateDict2 = {'A>C':0.039, 'A>G':0.310, 'A>T':0.123,
-                   'C>A':0.140, 'C>G':0.022, 'C>T':3.028,
-                   'G>A':0.747, 'G>C':0.113, 'G>T':2.953,
-                   'T>A':0.056, 'T>C':0.261, 'T>G':0.036}
+
 
     NTentropies = []
     NTposns = []
@@ -184,63 +257,35 @@ def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, mutrate):
         for i in range((x*3)-3, (x*3)):
             NTposns.append(i)
             NTs.append(NTreference[i])
+    NTposnscopy = NTposns
     bases = ["A","C","T","G"]
-    predmut = False
-    spentpos = []
-    print("".join(AAs))
-    print("".join(NTs))
-    while predmut == False:
-        maximumentropy = max(NTentropies)
-        minentropyindex = NTentropies.index(maximumentropy)
-        riskpos = NTposns[minentropyindex]
-        riskAA = NTs[minentropyindex]
-        spentNTs = []
-        while len(spentNTs) != 3:
-            highest = -math.inf
-            for x in range(0,4):
-                if bases[x] == riskAA:
-                    continue
-                if bases[x] in spentNTs:
-                    continue
-                else:
-                    observed = AccNTtable[riskpos,x]
-                    mutation = riskAA+">"+bases[x]
-                    expected = MutRateDict[mutation]
-                    if (observed - expected) > highest:
-                        highest = observed-expected
-                        sub = bases[x]
-            print(riskpos)
-            print(riskAA)
-            print(round((riskpos % 3), 2))
-            if round((riskpos % 3), 2) == 0:
-                print("pos1")
-                oldcodon = NTreference[riskpos]+NTreference[riskpos+1]+NTreference[riskpos+2]
-                newcodon = sub+NTreference[riskpos+1]+NTreference[riskpos+2]
-            elif round((riskpos % 3), 2) == 1:
-                print("pos2")
-                oldcodon = NTreference[riskpos-1]+NTreference[riskpos]+NTreference[riskpos+1]
-                newcodon = NTreference[riskpos-1]+sub+NTreference[riskpos+1]
-            elif round((riskpos % 3), 2) == 2:
-                print("pos3")
-                oldcodon = NTreference[riskpos-2]+NTreference[riskpos-1]+NTreference[riskpos]
-                newcodon = NTreference[riskpos-2]+NTreference[riskpos-1]+sub
-            
-            if codondict[oldcodon] != codondict[newcodon]:
-                predmut = True
-                likelymutAA = codondict[oldcodon]+">"+str(round((riskpos-1)/3)+1)+">"+codondict[newcodon]
-                likelymutNT = NTreference[riskpos]+">"+str(riskpos+1)+">"+sub
-                spentNTs = ["A","C","T"]
-            else:
-                predmut = False
-                spentNTs.append(sub)
-        NTentropies.remove(maximumentropy)
-        NTposns.remove(riskpos)
-        NTs.remove(riskAA)
+
+    output = mutbyneutrate(NTentropies, NTposns, NTs)
+    entmutAA = output[0]
+    entmutNT = output[1]
+
+    #####Selection Coefficient######
+    highest = -math.inf
+    for i in NTposns:
+        for j in range(0,4):
+            if NTreference[i] == bases[j]:
+                continue
+            s = selectioncoefficient(timtables2,i,j)
+            if s>highest:
+                highest = s
+                selectionmut = NTreference[i]+str(i)+bases[j]
+                
+    #####load in baseml rates######
+    rates = open("treecov/evorates.txt", "r").readlines()
+    sitewiserates = rates[NTposnscopy]
+    output = mutbyneutrate(sitewiserates, NTposns, NTs)
+    ratmutAA = output[0]
+    ratemutNT = output[1]
     
     if totalscore > 50:
         AAs = "".join(AAs)
         sitewiseentropies = ",".join(entropies)
-        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore, sitewiseentropies, deletions, likelymutNT, likelymutAA]
+        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore, sitewiseentropies, deletions, entmutNT, entmutAA, ratmutNT, ratmutAA,selectionmut]
         return finallist
     else:
         return "NA"

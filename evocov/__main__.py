@@ -120,15 +120,16 @@ print("The pipeline will now proceed with counting and analysis of the mutationa
 
 if backdoor == True:
     numsequences = 100
-    NTcounting = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
-    numsequences = NTcounting[0]
-    mutrate = NTcounting[1]
-else:
-    print("Round 1/4")
     #NTcounting = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
     #numsequences = NTcounting[0]
     numsequences = 100
     mutrate = 0.01
+else:
+    print("Round 1/4")
+    NTcounting = simplecounter("NT", NTfile, "Analysis/simplecountsNT.csv")
+    numsequences = NTcounting[0]
+    mutrate = NTcounting[1]
+
 if backdoor == True:
     NTtable = np.genfromtxt('Analysis/simplecountsAA.csv', delimiter=',')
 else:
@@ -136,6 +137,7 @@ else:
     NTtable = simplecounter("AA", AAfile, "Analysis/simplecountsAA.csv")
 print("Round 3/4")
 timtables = metasplitcounter("AA", AAfile, "date", ["2019-12", "2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06"])
+timtables2 = metasplitcounter("NT", NTfile, "date", ["2019-12", "2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06"])
 
 
 if default == True:
@@ -158,7 +160,7 @@ print("\nLoading in and scoring epitope candidates\n")
 candidates = open("Data/vendruscolocandidates.txt").readlines()
 scores = []
 for x in tqdm(candidates):
-    score = scoring(x, NTtable, AccNTtable, vartables, timtables, mutrate)
+    score = scoring(x, NTtable, AccNTtable, vartables, timtables, timtables2, mutrate)
     if score != "NA":
         scores.append(score)
 
