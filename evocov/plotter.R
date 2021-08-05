@@ -4,6 +4,8 @@ library(tidyverse)
 library(RColorBrewer)
 library(stringr)
 library(png)
+library(hash)
+library(RGenetics)
 
 boxtext <- function(x, y, labels = NA, col.text = NULL, col.bg = NA, 
                     border.bg = NA, adj = NULL, pos = NULL, offset = 0.5, 
@@ -283,6 +285,18 @@ stackedbarNT <- function(MutationTable, reference, counts) {
          xpd = TRUE, horiz = T)
   
   
+}
+translate <- function(string){
+  stringlist <- unlist(str_split(string, ""))
+  geneticcode <- geneticCodeTable()
+  AAseq <- c()
+  for (i in seq(1, length(stringlist),3)){
+    codon <- paste0(c(stringlist[i], stringlist[i+1], stringlist[i+2]), collapse = "")
+    ind <- match(codon, geneticcode[,4])
+    AA <- geneticcode[ind, 6]
+    AAseq <- append(AAseq, AA)
+  }
+  return(AAseq)
 }
 
 args <- commandArgs(trailingOnly=TRUE)
@@ -594,14 +608,14 @@ text(1,0.6,as.character(round((as.numeric(epitopes[epitope,8])+as.numeric(epitop
 epitopezoom(locilist, "Data/spike_AA.txt", aatable)
 
 
-if (file.exists(paste0(c("Analysis/Epitopes/ByCountry/", sequence, ".csv"), collapse= ""))){
-  epitopecounts <- read.csv(paste0(c("Analysis/Epitopes/ByCountry/", sequence, ".csv"), collapse= ""), header = F)
+if (file.exists(paste0(c("Analysis/Epitopes/ByCountryWP/", sequence, ".csv"), collapse= ""))){
+  epitopecounts <- read.csv(paste0(c("Analysis/Epitopes/ByCountryWP/", sequence, ".csv"), collapse= ""), header = F)
   epitopeversions <- epitopecounts[,1]
   epitopecounts <- epitopecounts[,2:ncol(epitopecounts)]
   epitopecounts <- rbind.data.frame(epitopecounts, colSums(epitopecounts))
   epitopecounts <- rbind.data.frame(epitopecounts, rep(0, ncol(epitopecounts)))
   load("Helpers/countrydict.RData")
-  WHOdata <- read.csv("WHOcasedata.csv")
+  WHOdata <- read.csv("WHOcasedata.csv", row.names = NULL)
   countries <- readLines("Helpers/countries.txt")
   for (i in 2:nrow(WHOdata)){
     breaking <- F
@@ -611,12 +625,12 @@ if (file.exists(paste0(c("Analysis/Epitopes/ByCountry/", sequence, ".csv"), coll
     if (is.null(GISAIDcountry)){
       next
     }
-    epitopecounts[nrow(epitopecounts), ColumnNo] <- epitopecounts[nrow(epitopecounts), ColumnNo] + WHOdata[i,5]*4
+    epitopecounts[nrow(epitopecounts), ColumnNo] <- epitopecounts[nrow(epitopecounts), ColumnNo] + WHOdata[i,6]*4
   }
   epitopecounts <- epitopecounts[unlist(epitopecounts[nrow(epitopecounts), ]) != 0]
   epitopecounts <- epitopecounts[unlist(epitopecounts[nrow(epitopecounts)-1, ]) != 0]
   epitopematrix <- matrix(0, nrow = nrow(epitopecounts)-2, ncol = ncol(epitopecounts)+1)
-  for (j in 1:(ncol(epitopecounts))){
+  for (j in 1:(ncol(epitopecounts)-1)){
     for (i in 1:(nrow(epitopecounts)-2)){
       if (epitopecounts[(nrow(epitopecounts)-1),j] != 0){
         epitopematrix[i,j] <- (epitopecounts[i,j]/epitopecounts[nrow(epitopecounts)-1,j])*epitopecounts[nrow(epitopecounts),j]
@@ -627,7 +641,31 @@ if (file.exists(paste0(c("Analysis/Epitopes/ByCountry/", sequence, ".csv"), coll
     }
   }
   epitopematrix[,ncol(epitopematrix)] <- rowSums(epitopematrix)
-  layout(matrix(c(1,1,2,3,4,5), ncol = 2, byrow = T), heights = c(1,0.5,8))
+  row.names(epitopematrix) <- epitopeversions
+  epitopematrix <- epitopematrix[order(epitopematrix[,ncol(epitopematrix)], decreasing = TRUE),]
+  epitopeversions <- row.names(epitopematrix)
+  nonsynom = FALSE
+  ind = 2
+  while (nonsynom == FALSE){
+    possib = epitopeversions[ind]
+    translatedepitope = translate(possib)
+    if (setequal(translatedepitope, sequencelist)){
+      nonsynom == FALSE
+      ind <- ind + 1
+    }
+    else {
+      nonsynom = TRUE
+      freqmutations <- c()
+      for (m in 1:length(translatedepitope)){
+        if (translatedepitope[m]!=sequencelist[m]){
+          mutation <- paste0(c(sequencelist[m], ">", str_trim(locilist[m]),">",translatedepitope[m]), collapse = "")
+          freqmutations <- append(freqmutations, mutation)
+        }
+      }
+    }
+  }
+  frequencydeptmutations <- paste0(freqmutations, collapse = ", ")
+  layout(matrix(c(1,1,2,3,4,5,4,6,4,7,4,8,4,9,4,10,4,11), ncol = 2, byrow = T), heights = c(1,0.8,4,0.8,4,0.8,4,0.8,4))
   par(mar=c(0,0,0,0))
   plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
   text(1,0.8,"Mutability Analysis/Predicted Variants", cex = 2)
@@ -635,7 +673,7 @@ if (file.exists(paste0(c("Analysis/Epitopes/ByCountry/", sequence, ".csv"), coll
   text(1,1,"Variations of the Epitope (whole pandemic) and 
 their Normalised Global Frequency in the Last Month", cex = 1.3, font = 3)
   plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
-  text(1,0.8,"XXX", cex = 2)
+  text(1,1,"Prediction based on NT-wise entropy", cex = 1.3, font = 3)
   par(mar=c(0,0,0,0))
   plot(1, 1, col = "white", xaxt = "n", yaxt = "n", ylim = c(0.5,length(epitopeversions)+0.5), xlim = c(0,5))
   startpoint <- ((length(sequencelist) - 7)*0.1) + 3
@@ -645,6 +683,31 @@ their Normalised Global Frequency in the Last Month", cex = 1.3, font = 3)
     lines(c(startpoint,4.15), c(y,y))
     text(4.5,y, as.character(round((epitopematrix[i, ncol(epitopematrix)])/sum(epitopematrix[,ncol(epitopematrix)]), 3)), cex = 1)
   }
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+  rect(0, 0, 2, 2, col = "cadetblue")
+  text(1,1.5,epitopes[epitope,13], cex = 3, col = "white")
+  text(1,0.6,epitopes[epitope,14], cex = 3, col = "white")
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+  text(1,1,"Prediction based on baseml estimated mutation rates", cex = 1.3, font = 3)
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+  rect(0, 0, 2, 2, col = "darkolivegreen4")
+  text(1,1.5,epitopes[epitope,15], cex = 3, col = "white")
+  text(1,0.6,epitopes[epitope,16], cex = 3, col = "white")
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+  text(1,1,"Prediction based on selection coefficient", cex = 1.3, font = 3)
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+  rect(0, 0, 2, 2, col = "brown1")
+  text(1,1.5,epitopes[epitope,17], cex = 3, col = "white")
+  text(1,0.6,epitopes[epitope,18], cex = 3, col = "white")
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
+  text(1,1,"Prediction based on normalised global frequency", cex = 1.3, font = 3)
+  par(mar=c(0,0,0,0))
+  plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
+  rect(0, 0, 2, 2, col = "darkgoldenrod1")
+  text(1,1, frequencydeptmutations, cex = 3, col = "white")
 }
 
 

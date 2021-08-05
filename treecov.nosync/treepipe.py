@@ -91,12 +91,12 @@ try:
                 subprocess.call("paml/bin/baseml", shell = True)
                 if os.path.isfile("rates"):
                     success += 1
-                    subprocess.call("Rscript harvestrates.R", shell = True)
+                    subprocess.call("Rscript harvestrates.R iteration", shell = True)
                     subprocess.call("rm rates", shell = True)
             except:
                 continue
             
-
+    subprocess.call("Rscript harvestrates.R final", shell = True)
     print(success)
     
 except:

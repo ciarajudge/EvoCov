@@ -157,8 +157,9 @@ AccNTtable = np.genfromtxt('Analysis/simplecountsNT.csv', delimiter=',')
 #Scoring
 print("\nLoading in and scoring epitope candidates\n")
 
-candidates = open("Data/vendruscolocandidates.txt").readlines()
+candidates = open("Data/candidates.txt").readlines()
 scores = []
+normfreqcandidates = []
 for x in tqdm(candidates):
     score = scoring(x, NTtable, AccNTtable, vartables, timtables, timtables2, mutrate)
     if score != "NA":
@@ -166,12 +167,20 @@ for x in tqdm(candidates):
 
 sortedscores = sorted(scores, key = itemgetter(9), reverse = True)
 
-freqcalc(NTfile, candidates, ['2021-07'])
-
 with open("Analysis/scoredepitopes.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerows(sortedscores)
 
+for i in range(0,2):
+    scorebreakdown = sortedscores[i]
+    print(scorebreakdown)
+    posns = [str(x-1) for x in scorebreakdown[1]]
+    posns = ",".join(posns)+",_3"
+    print(posns)
+    normfreqcandidates.append(posns)
+    
+
+freqcalc(NTfile, normfreqcandidates, ['2021-07'])
 
 '''         
 candidates = open("Data/slidingwindowcandidates.txt").readlines()

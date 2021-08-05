@@ -60,6 +60,7 @@ def AAentropy(AA, NTtable):
 
 def selectioncoefficient(timtables, row, col):
     looking = True
+    t1 = "F"
     for t in range(0, (np.size(timtables, 2))):
         if looking == True:
             if timtables[row,col,t] == 0:
@@ -69,17 +70,27 @@ def selectioncoefficient(timtables, row, col):
                 p0 = timtables[row,col,t]
                 q0 = 1-p0
                 looking = False
-    pt = timtables[row,col,(np.size(timtables, 2))-1]
-    qt = 1-pt
-    t = ((np.size(timtables, 2)) - (t1 + 1))*4
-    print(p0)
-    print(pt)
-    print(q0)
-    print(qt)
-    s = (1/t)*math.log((pt*q0)/(qt*p0))
-    return s
+    if t1 == "F":
+        return "Impossible"
+    else:
+        pt = timtables[row,col,(np.size(timtables, 2))-1]
+        qt = 1-pt
+        t2 = np.size(timtables, 2)
+        if pt == 0:
+            for t in range(t1, (np.size(timtables, 2))):
+                if timtables[row,col,t] == 0:
+                    break
+                t2 = t
+                pt = timtables[row,col,t]
+                qt = 1-pt
+        t = (t2 - (t1 + 1))*4
+        if t == 0:
+            s = -10
+        else:
+            s = (1/t)*math.log((pt*q0)/(qt*p0))
+        return s
 
-def mutbyneutrate(NTentropies, NTposns, NTs):
+def mutbyneutrate(NTentropies, NTposns, NTs, mutrate, AccNTtable, NTreference):
     MutRateDict = {'A>C':0.039*mutrate, 'A>G':0.310*mutrate, 'A>T':0.123*mutrate,
                    'C>A':0.140*mutrate, 'C>G':0.022*mutrate, 'C>T':3.028*mutrate,
                    'G>A':0.747*mutrate, 'G>C':0.113*mutrate, 'G>T':2.953*mutrate,
@@ -88,6 +99,22 @@ def mutbyneutrate(NTentropies, NTposns, NTs):
                    'C>A':0.140, 'C>G':0.022, 'C>T':3.028,
                    'G>A':0.747, 'G>C':0.113, 'G>T':2.953,
                    'T>A':0.056, 'T>C':0.261, 'T>G':0.036}
+    codondict = {'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
+    'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
+    'AAC':'N', 'AAT':'N', 'AAA':'K', 'AAG':'K',
+    'AGC':'S', 'AGT':'S', 'AGA':'R', 'AGG':'R',
+    'CTA':'L', 'CTC':'L', 'CTG':'L', 'CTT':'L',
+    'CCA':'P', 'CCC':'P', 'CCG':'P', 'CCT':'P',
+    'CAC':'H', 'CAT':'H', 'CAA':'Q', 'CAG':'Q',
+    'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGT':'R',
+    'GTA':'V', 'GTC':'V', 'GTG':'V', 'GTT':'V',
+    'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A',
+    'GAC':'D', 'GAT':'D', 'GAA':'E', 'GAG':'E',
+    'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGT':'G',
+    'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S',
+    'TTC':'F', 'TTT':'F', 'TTA':'L', 'TTG':'L',
+    'TAC':'Y', 'TAT':'Y', 'TAA':'_', 'TAG':'_',
+    'TGC':'C', 'TGT':'C', 'TGA':'_', 'TGG':'W'}
     predmut = False
     spentpos = []
     bases = ["A","C","T","G"]
@@ -112,15 +139,12 @@ def mutbyneutrate(NTentropies, NTposns, NTs):
                         highest = observed-expected
                         sub = bases[x]
             if round((riskpos % 3), 2) == 0:
-                print("pos1")
                 oldcodon = NTreference[riskpos]+NTreference[riskpos+1]+NTreference[riskpos+2]
                 newcodon = sub+NTreference[riskpos+1]+NTreference[riskpos+2]
             elif round((riskpos % 3), 2) == 1:
-                print("pos2")
                 oldcodon = NTreference[riskpos-1]+NTreference[riskpos]+NTreference[riskpos+1]
                 newcodon = NTreference[riskpos-1]+sub+NTreference[riskpos+1]
             elif round((riskpos % 3), 2) == 2:
-                print("pos3")
                 oldcodon = NTreference[riskpos-2]+NTreference[riskpos-1]+NTreference[riskpos]
                 newcodon = NTreference[riskpos-2]+NTreference[riskpos-1]+sub
             
@@ -237,7 +261,7 @@ def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, timtables2, mu
     
     
     totalscore = distancescore+lenscore+AAscore+locationscore+entropyscore+timescore+variantscore
-    indexes = [x+1 for x in indexes]
+    
     entropies = [str(x) for x in entro]
     if len(deletions) > 1:
         deletions = [str(x) for x in deletions]
@@ -260,32 +284,52 @@ def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, timtables2, mu
     NTposnscopy = NTposns
     bases = ["A","C","T","G"]
 
-    output = mutbyneutrate(NTentropies, NTposns, NTs)
+    output = mutbyneutrate(NTentropies, NTposns, NTs, mutrate, AccNTtable, NTreference)
     entmutAA = output[0]
     entmutNT = output[1]
 
     #####Selection Coefficient######
     highest = -math.inf
+    impossible = []
     for i in NTposns:
         for j in range(0,4):
             if NTreference[i] == bases[j]:
                 continue
             s = selectioncoefficient(timtables2,i,j)
+            if s == "Impossible":
+                impossible.append(NTreference[i]+str(i)+bases[j])
+                s = -math.inf
             if s>highest:
                 highest = s
-                selectionmut = NTreference[i]+str(i)+bases[j]
-                
-    #####load in baseml rates######
-    rates = open("treecov/evorates.txt", "r").readlines()
-    sitewiserates = rates[NTposnscopy]
-    output = mutbyneutrate(sitewiserates, NTposns, NTs)
-    ratmutAA = output[0]
-    ratemutNT = output[1]
+                selectionmutNT = NTreference[i]+">"+str(i)+">"+bases[j]
+                riskpos = i
+                sub = bases[j]
+    if round((riskpos % 3), 2) == 0:
+        oldcodon = NTreference[riskpos]+NTreference[riskpos+1]+NTreference[riskpos+2]
+        newcodon = sub+NTreference[riskpos+1]+NTreference[riskpos+2]
+    elif round((riskpos % 3), 2) == 1:
+        oldcodon = NTreference[riskpos-1]+NTreference[riskpos]+NTreference[riskpos+1]
+        newcodon = NTreference[riskpos-1]+sub+NTreference[riskpos+1]
+    elif round((riskpos % 3), 2) == 2:
+        oldcodon = NTreference[riskpos-2]+NTreference[riskpos-1]+NTreference[riskpos]
+        newcodon = NTreference[riskpos-2]+NTreference[riskpos-1]+sub
+    selectionmutAA = codondict[oldcodon]+">"+str(round((riskpos-1)/3)+1)+">"+codondict[newcodon]
     
+    #####load in baseml rates######
+    rates = open("treecov.nosync/evorates.txt", "r").readlines()
+    sitewiserates = []
+    for x in NTposnscopy:
+        sitewiserates.append(rates[x])
+    output = mutbyneutrate(sitewiserates, NTposns, NTs, mutrate, AccNTtable, NTreference)
+    
+    ratmutAA = output[0]
+    ratmutNT = output[1]
+
+    indexes = [x+1 for x in indexes]
     if totalscore > 50:
         AAs = "".join(AAs)
         sitewiseentropies = ",".join(entropies)
-        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore, sitewiseentropies, deletions, entmutNT, entmutAA, ratmutNT, ratmutAA,selectionmut]
+        finallist = [AAs, indexes, distancescore, lenscore, AAscore, locationscore, entropyscore, timescore, variantscore, totalscore, sitewiseentropies, deletions, entmutNT, entmutAA, ratmutNT, ratmutAA,selectionmutNT, selectionmutAA]
         return finallist
     else:
         return "NA"
