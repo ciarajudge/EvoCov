@@ -157,7 +157,7 @@ AccNTtable = np.genfromtxt('Analysis/simplecountsNT.csv', delimiter=',')
 #Scoring
 print("\nLoading in and scoring epitope candidates\n")
 
-candidates = open("Data/candidates.txt").readlines()
+candidates = open("Data/vendruscolocandidates.txt").readlines()
 scores = []
 normfreqcandidates = []
 for x in tqdm(candidates):
@@ -198,6 +198,8 @@ with open("Analysis/scoredslidingwindowepitopes.csv", "w", newline="") as f:
 
 #Download current case data for all countries and normalise
 print("Retrieving current case data for all countries from the WHO, this will be used to normalise the counts by country.\n")
+if os.path.isfile("WHOcasedata.csv"):
+    subprocess.call("rm WHO*", shell=True)
 wget.download("https://covid19.who.int/WHO-COVID-19-global-table-data.csv", "WHOcasedata.csv")
 
 
@@ -217,7 +219,7 @@ else:
         subprocess.call("Rscript evocov/plotter.R Analysis/simplecountsNT.csv "+str(numsequences)+" Analysis/simplecountsAA.csv", shell = True)
         
 
-subprocess.call("rm WHO*", shell = True)
+
 
 try:
     subprocess.call("curl http://textbelt.com/text -d number="+sys.argv[3]+" -d message=\"Pipeline Analysis Complete!\" -d key=e237256cdcb7af72df888a7558f92c0e97b0fb55OVbGpYEsvYujZXDCVi0Rtvom6 ", shell = "True")

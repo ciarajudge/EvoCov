@@ -625,7 +625,7 @@ if (file.exists(paste0(c("Analysis/Epitopes/ByCountryWP/", sequence, ".csv"), co
     if (is.null(GISAIDcountry)){
       next
     }
-    epitopecounts[nrow(epitopecounts), ColumnNo] <- epitopecounts[nrow(epitopecounts), ColumnNo] + WHOdata[i,6]*4
+    epitopecounts[nrow(epitopecounts), ColumnNo] <- epitopecounts[nrow(epitopecounts), ColumnNo] + WHOdata[i,5]*4
   }
   epitopecounts <- epitopecounts[unlist(epitopecounts[nrow(epitopecounts), ]) != 0]
   epitopecounts <- epitopecounts[unlist(epitopecounts[nrow(epitopecounts)-1, ]) != 0]
@@ -670,8 +670,8 @@ if (file.exists(paste0(c("Analysis/Epitopes/ByCountryWP/", sequence, ".csv"), co
   plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
   text(1,0.8,"Mutability Analysis/Predicted Variants", cex = 2)
   plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
-  text(1,1,"Variations of the Epitope (whole pandemic) and 
-their Normalised Global Frequency in the Last Month", cex = 1.3, font = 3)
+  text(1,1,"Variations of the epitope and 
+their normalised global frequency over the pandemic", cex = 1.3, font = 3)
   plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
   text(1,1,"Prediction based on NT-wise entropy", cex = 1.3, font = 3)
   par(mar=c(0,0,0,0))

@@ -161,6 +161,78 @@ def mutbyneutrate(NTentropies, NTposns, NTs, mutrate, AccNTtable, NTreference):
         NTs.remove(riskAA)
     return [likelymutAA, likelymutNT]
         
+def neutcomparison(NTposns, NTs, mutrate, AccNTtable, NTreference):
+    MutRateDict = {'A>C':0.039*mutrate, 'A>G':0.310*mutrate, 'A>T':0.123*mutrate,
+                   'C>A':0.140*mutrate, 'C>G':0.022*mutrate, 'C>T':3.028*mutrate,
+                   'G>A':0.747*mutrate, 'G>C':0.113*mutrate, 'G>T':2.953*mutrate,
+                   'T>A':0.056*mutrate, 'T>C':0.261*mutrate, 'T>G':0.036*mutrate}
+    MutRateDict2 = {'A>C':0.039, 'A>G':0.310, 'A>T':0.123,
+                   'C>A':0.140, 'C>G':0.022, 'C>T':3.028,
+                   'G>A':0.747, 'G>C':0.113, 'G>T':2.953,
+                   'T>A':0.056, 'T>C':0.261, 'T>G':0.036}
+    codondict = {'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
+    'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
+    'AAC':'N', 'AAT':'N', 'AAA':'K', 'AAG':'K',
+    'AGC':'S', 'AGT':'S', 'AGA':'R', 'AGG':'R',
+    'CTA':'L', 'CTC':'L', 'CTG':'L', 'CTT':'L',
+    'CCA':'P', 'CCC':'P', 'CCG':'P', 'CCT':'P',
+    'CAC':'H', 'CAT':'H', 'CAA':'Q', 'CAG':'Q',
+    'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGT':'R',
+    'GTA':'V', 'GTC':'V', 'GTG':'V', 'GTT':'V',
+    'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A',
+    'GAC':'D', 'GAT':'D', 'GAA':'E', 'GAG':'E',
+    'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGT':'G',
+    'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S',
+    'TTC':'F', 'TTT':'F', 'TTA':'L', 'TTG':'L',
+    'TAC':'Y', 'TAT':'Y', 'TAA':'_', 'TAG':'_',
+    'TGC':'C', 'TGT':'C', 'TGA':'_', 'TGG':'W'}
+    bases = ["A","C","T","G"]
+    ratios = []
+    mutations = []
+    for i in NTposns:
+        for x in range(0,4):
+            if bases[x] == NTreference[i]:
+                continue
+            else:
+                observed = AccNTtable[i,x]
+                mutation = NTreference[i]+">"+bases[x]
+                expected = MutRateDict[mutation]
+                ratio = observed/expected
+                mutation = NTreference[i]+">"+str(i+1)+">"+bases[x]
+                ratios.append(ratio)
+                mutations.append(mutation)
+    predicted = False
+    while predicted == False:
+        maximum = max(ratios)
+        index = ratios.index(maximum)
+        mutation = mutations[index]
+        print(mutation)
+        pos = int(mutation.split(">")[1])-1
+        print(pos)
+        sub = mutation.split(">")[2]
+        print(sub)
+        if round((pos % 3), 2) == 0:
+            oldcodon = NTreference[pos]+NTreference[pos+1]+NTreference[pos+2]
+            newcodon = sub+NTreference[pos+1]+NTreference[pos+2]
+        elif round((pos % 3), 2) == 1:
+            oldcodon = NTreference[pos-1]+NTreference[pos]+NTreference[pos+1]
+            newcodon = NTreference[pos-1]+sub+NTreference[pos+1]
+        elif round((pos % 3), 2) == 2:
+            oldcodon = NTreference[pos-2]+NTreference[pos-1]+NTreference[pos]
+            newcodon = NTreference[pos-2]+NTreference[pos-1]+sub
+        print(oldcodon)
+        print(newcodon)
+        if codondict[oldcodon] != codondict[newcodon]:
+            predicted = True
+            likelymutAA = codondict[oldcodon]+">"+str(round((pos-1)/3)+1)+">"+codondict[newcodon]
+            likelymutNT = mutation
+        else:
+            mutations.remove(mutation)
+            ratios.remove(maximum)
+            predicted = False
+    return [likelymutAA, likelymutNT]
+    
+
 
 def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, timtables2, mutrate):
     codondict = {'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
@@ -271,20 +343,16 @@ def scoring(candidate, NTtable, AccNTtable, VarTables, TimTables, timtables2, mu
     #######Comparison of NT>NT mutation rates at each position to the baseline#########
 
 
-    NTentropies = []
     NTposns = []
     NTs = []
     for x in indexes:
-        result = entropy(x, AccNTtable)
-        for y in result:
-            NTentropies.append(y)
         for i in range((x*3)-3, (x*3)):
             NTposns.append(i)
             NTs.append(NTreference[i])
     NTposnscopy = NTposns
     bases = ["A","C","T","G"]
 
-    output = mutbyneutrate(NTentropies, NTposns, NTs, mutrate, AccNTtable, NTreference)
+    output = neutcomparison(NTposns, NTs, mutrate, AccNTtable, NTreference)
     entmutAA = output[0]
     entmutNT = output[1]
 
