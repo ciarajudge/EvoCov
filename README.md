@@ -1,6 +1,6 @@
 # EvoCov
 <img align="right" src="evocado.png" width=170px>
-This is EvoCov, a pipeline designed for analysis of SARS-CoV-2 sequences from GISAID. The pipeline can be run interactively or by default, with a view to using SARS-CoV-2 sequence information to make an evolutionarily aware estimate of efficient epitopes on the spike protein for antibody design. While the code is open source, the data intended for use with the pipeline may only be obtained with express permission from GISAID. If you have any issues making use of the pipeline, or suggestions for how it could be improved, please [open an issue](https://github.com/ciarajudge/EvoCov/issues) or [start a discussion](https://github.com/ciarajudge/EvoCov/discussions)!
+This is EvoCov, a pipeline designed for analysis of SARS-CoV-2 sequences from GISAID. The pipeline can be run interactively or by default, with a view to using SARS-CoV-2 sequence information to make an evolutionarily aware estimate of efficient epitopes on the spike protein for antibody design. While the code is open source, the data intended for use with the pipeline may only be obtained with express permission from GISAID. If you have any issues making use of the pipeline, or suggestions for how it could be improved, please open an issue or start a discussion!
 
 ## Installation
 Clone the github repository to your machine to use the EvoCov package. Before using, you should check that any python dependencies are installed.
