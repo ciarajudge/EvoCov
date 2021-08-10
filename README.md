@@ -14,7 +14,7 @@ pip install -r requirements.txt
 ```
 
 ## Preparation of site-wise mutation rates using Treecov
-The prediction aspect of the pipeline makes use of estimated site-wise mutation rates from analysis of a SARS-CoV-2 phylogenetic tree with baseml, a Phylogenetic Analysis by Maximum Likelihood program. To generate these rates, you must download and compile paml and place it in the ./treecov/ directory, where the path to the baseml executable is ./treecov/paml/bin/baseml. It is important that the folders are named correctly. You must also download a phylogenetic tree on GISAID by clicking Audacity on the platform, and place the file global.tree in the ./treecov/ directory. To run the treecov pipeline to generate the rates, navigate to the treecov directory and use the command:
+The prediction aspect of the pipeline makes use of estimated site-wise mutation rates from analysis of a SARS-CoV-2 phylogenetic tree with baseml, a [Phylogenetic Analysis by Maximum Likelihood](http://abacus.gene.ucl.ac.uk/software/paml.html) program. To generate these rates, you must download and compile paml and place it in the ./treecov/ directory, where the path to the baseml executable is ./treecov/paml/bin/baseml. It is important that the folders are named correctly. You must also download a phylogenetic tree on GISAID by clicking Audacity on the platform, and place the file global.tree in the ./treecov/ directory. To run the treecov pipeline to generate the rates, navigate to the treecov directory and use the command:
 ```bash
 python treepipe.py /absolute/path/to/GISAID/fasta/file
 ```
