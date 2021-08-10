@@ -1,5 +1,5 @@
 # EvoCov
-<img align="right" src="evocado.png" width=200px>
+<img align="right" src="evocado.png" width=150px>
 This is EvoCov, a pipeline designed for analysis of SARS-CoV-2 sequences from GISAID. The pipeline can be run interactively or by default, with a view to using SARS-CoV-2 sequence information to make an evolutionarily aware estimate of efficient epitopes on the spike protein for antibody design.
 
 ## Installation
@@ -13,8 +13,14 @@ git clone https://github.com/ciarajudge/EvoCov.git
 pip install -r requirements.txt
 ```
 
+## Preparation of site-wise mutation rates using Treecov
+The prediction aspect of the pipeline makes use of estimated site-wise mutation rates from analysis of a SARS-CoV-2 phylogenetic tree with baseml, a Phylogenetic Analysis by Maximum Likelihood program. To generate these rates, you must download and compile paml and place it in the ./treecov/ directory, where the path to the baseml executable is ./treecov/paml/bin/baseml. It is important that the folders are named correctly. You must also download a phylogenetic tree on GISAID by clicking Audacity on the platform, and place the file global.tree in the ./treecov/ directory. To run the treecov pipeline to generate the rates, navigate to the treecov directory and use the command:
+```bash
+python treepipe.py /absolute/path/to/GISAID/fasta/file
+```
+This initiates the process of iterative sampling and analysis of the phylogenetic tree 100 times, in 10 batches of 10. These batch sizes, or the number of batches, can be adjusted by changing the number of loops in the code in subsampletree.R (for batch size) and treepipe.py (for no. of batches).
 
-## Default Usage
+## Default Usage of Evocov
 Navigate to the cloned repository and call the package along with the file paths of your latest GISAID unmasked sequence file and metadata file. This will initiate a default run of the pipeline, including handling of any exceptions or options. This includes the final step of the pipeline where the results are piped to a PDF using R. 
 
 ```bash
