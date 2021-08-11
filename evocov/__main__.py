@@ -157,7 +157,7 @@ AccNTtable = np.genfromtxt('Analysis/simplecountsNT.csv', delimiter=',')
 #Scoring
 print("\nLoading in and scoring epitope candidates\n")
 
-candidates = open("Data/vendruscolocandidates.txt").readlines()
+candidates = open("Data/candidates.txt").readlines()
 scores = []
 normfreqcandidates = []
 for x in tqdm(candidates):
