@@ -27,9 +27,6 @@ def mutationmaker(form, loci, newbases, outfilename1, outfilename2):
     outfile2 = open(outfilename2, "w")
     outfile2.write(outseqRBD)
         
-mutationmaker("AA", [354], ["K"], "spikeAA_N354K.fa", "RBDAA_N354K.fa")
-mutationmaker("AA", [354], ["S"], "spikeAA_N354S.fa", "RBDAA_N354S.fa")
-mutationmaker("AA", [354], ["I"], "spikeAA_N354I.fa", "RBDAA_N354I.fa")
-mutationmaker("AA", [500], ["P"], "spikeAA_T500P.fa", "RBDAA_T500P.fa")
-mutationmaker("AA", [500], ["C"], "spikeAA_Y449C.fa", "RBDAA_Y449C.fa")
-mutationmaker("AA", [500], ["E"], "spikeAA_Q493E.fa", "RBDAA_Q493E.fa")
+
+mutationmaker("AA", [493], ["E"], "spikeAA_Q493E.fa", "RBDAA_Q493E.fa")
+mutationmaker("AA", [452], ["V"], "spikeAA_L452V.fa", "RBDAA_L452V.fa")

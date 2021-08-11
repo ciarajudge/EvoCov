@@ -211,6 +211,26 @@ addfromfile <- function(filepath, type, dot, color) {
     points(1:length(counts), counts, pch = dot, col = color)
   }
 }
+addfromfile2 <- function(filepath, type, dot, color) {
+  table <- read.csv(filepath, header = T)
+  counts <- rowSums(table)-table[,21]
+  if (type == "l"){
+    lines(1:length(counts), counts, col = color)
+  }
+  else if (type  == "p"){
+    points(1:length(counts), counts, pch = dot, col = color)
+  }
+}
+addfromfile3 <- function(filepath, type, dot, color) {
+  table <- read.csv(filepath, header = T)
+  counts <- table[,21]
+  if (type == "l"){
+    lines(1:length(counts), counts, col = color)
+  }
+  else if (type  == "p"){
+    points(1:length(counts), counts, pch = dot, col = color)
+  }
+}
 initialiseRBDspecial <- function(xlabels, ylimit) {
   plot(c(1, 1273), c(0, 0), xlim = c(0,length(xlabels)+1),ylim = c(0, ylimit), main = "Mutational Landscape of Suggested Epitope Sequence",
        ylab = "Frequency Mutated", pch = ".", xlab = "AA in Epitope", xaxt="n",xaxs="i", yaxs="i")
@@ -401,7 +421,7 @@ par(mar=c(4.5, 4.5, 3.5, 1))
 initialisespikeAA("Frequency Mutated",  1)
 Varcolors <- sample(brewer.pal(9,"Set1"), length(varfiles), replace = F)
 for (x in 1:length(varfiles)) {
-  addfromfile(paste0(c("Analysis/variant/",varfiles[x]), collapse = ""), "p", 19, Varcolors[x])
+  addfromfile2(paste0(c("Analysis/variant/",varfiles[x]), collapse = ""), "p", 19, Varcolors[x])
 }
 legend("top", inset = c(0, -0.2),legend=variants, pch = 19, col = Varcolors,
        xpd = TRUE, horiz = T)
@@ -438,14 +458,20 @@ rightends <- rightends/3
 par(mar=c(4.5, 4.5, 2, 1))
 plot(c(0, 1273), c(0,0), ylim = c(0,1.07), pch=".", ylab = "Frequency Mutated", xlab = "Locus (by codon)")
 #initialisespikeAA("Frequency Mutated",2)
-for (i in 1:109){
-  rect(leftstarts[i],0, leftends[i], 1.06, col = adjustcolor("green", alpha.f = 0.7), border =FALSE)
-  rect(rightstarts[i],0, rightends[i], 1.01, col = adjustcolor("red", alpha.f = 0.7), border =FALSE)
-  arrows(leftends[i], 1.05, leftends[i]+50, 1.05, col = "green", length = 0.1)
-  arrows(rightstarts[i], 1, rightstarts[i]-50, 1, col = "red", length = 0.1)
+count = 0
+for (i in 1:108){
+  if (abs(leftstarts[i] - leftstarts[i+1])<10){
+    next
+  }
+  count = count+1
+  addition1 <- (count%%2)*0.05
+  rect(leftstarts[i],0, leftends[i], 1.01+addition1, col = adjustcolor("green", alpha.f = 0.7), border =FALSE)
+  rect(rightstarts[i],0, rightends[i], 1.01+addition1, col = adjustcolor("red", alpha.f = 0.7), border =FALSE)
+  arrows(leftends[i], 1.0+addition1, leftends[i]+50, 1.0+addition1, col = "green", length = 0.1, lwd = 2)
+  arrows(rightstarts[i], 1+addition1, rightstarts[i]-50, 1+addition1, col = "red", length = 0.1, lwd = 2)
 }
 for (x in 1:length(varfiles)) {
-  addfromfile(paste0(c("Analysis/variant/",varfiles[x]), collapse = ""), "p", 19, Varcolors[x])
+  addfromfile3(paste0(c("Analysis/variant/",varfiles[x]), collapse = ""), "p", 19, Varcolors[x])
 }
 
 
@@ -469,7 +495,6 @@ while (graph != numvars) {
 }
 
 #Page 5
-if (F){
 layout(matrix(c(1,1,2,2,3,3, 4, 5,6,6,7,7), ncol = 2, byrow = T), heights = c(1,0.5,3,6,0.5,4))
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
@@ -507,23 +532,21 @@ par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
 text(1,1,"The scoring system for epitopes is still in development but for now the following factors contribute to a score of 100:
 
-5 points - Distance: The average distance between amino acids in the epitope is calculated, and subtracted from and normalised by 15 (the 
+10 points - Distance: The average distance between amino acids in the epitope is calculated, and subtracted from and normalised by 15 (the 
 threshold in epitope candidate selection).
 
-10 points - Length: The epitope is awarded 1 point for each amino acid, capped at 10.
+5 points - Length: The epitope is awarded 1 point for each amino acid, capped at 5.
 
 10 points - Amino Acid Score: Each amino acid has a predetermined score based on its binding characteristics, and the epitope is given a 
 mark out of 5 based on its AA makeup.
 
-5 points - Location: If the epitope is in the Receptor Binding Domain it is awarded a bonus 5 points.
-
 65 points - Entropy: The average Shannon Entropy is calculated across each nucleotide in the epitope sequence, and normalised by the 
 maximum value (0.7 approx).
 
-5 points - Consistency: The sequences are divided up by variant and date, and the average variance of the Shannon Entropy per nucleotide is
+10 points - Consistency: The sequences are divided up by variant and date, and the average variance of the Shannon Entropy per nucleotide is
 calculated. Epitopes that do not see great changes in entropy across different variants and different points in time can earn up to 5 points.
      ", cex = 1)
-}
+
 #Page 6
 ranks = c("red","blue","yellow","green","purple")
 epitopes = suppressWarnings(read.csv("Analysis/scoredepitopes.csv", header = F))
@@ -568,7 +591,7 @@ par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))
 rect(0, 0, 2, 2, col = "orange")
 text(1,1.5,"Distance Score", cex = 2, col = "white")
-text(1,0.6,as.character(round(as.numeric(epitopes[epitope,3]),2)), cex = 4, col = "white")
+text(1,0.6,as.character(round(as.numeric(epitopes[epitope,3]),2)+5), cex = 4, col = "white")
 
 par(mar=c(0,0,0,0))
 plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n", ylim = c(0,2))

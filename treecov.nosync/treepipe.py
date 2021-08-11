@@ -36,7 +36,7 @@ try:
         counts = [0]*len(files)
         totalcounts = 0
         coveredacc = []
-        filepath = "2021-07-21_unmasked.fa"
+        filepath = sys.argv[1]
         with open(filepath, mode = "r") as handle:
             for record in tqdm(SeqIO.parse(handle, 'fasta')):
                 accession = record.id
