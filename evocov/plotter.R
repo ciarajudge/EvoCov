@@ -696,7 +696,7 @@ if (file.exists(paste0(c("Analysis/Epitopes/ByCountryWP/", sequence, ".csv"), co
   text(1,1,"Variations of the epitope and 
 their normalised global frequency over the pandemic", cex = 1.3, font = 3)
   plot(1, 1, col = "white", xaxt = "n", bty = "n", yaxt = "n")
-  text(1,1,"Prediction based on NT-wise entropy", cex = 1.3, font = 3)
+  text(1,1,"Prediction based on comparison to neutral rates", cex = 1.3, font = 3)
   par(mar=c(0,0,0,0))
   plot(1, 1, col = "white", xaxt = "n", yaxt = "n", ylim = c(0.5,length(epitopeversions)+0.5), xlim = c(0,5))
   startpoint <- ((length(sequencelist) - 7)*0.1) + 3
