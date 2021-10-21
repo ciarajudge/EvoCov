@@ -1,5 +1,5 @@
 # EvoCov
-<img align="right" src="evocado.png" width=170px>
+<img align="right" src="evocovlogo.png" width=170px>
 This is EvoCov, a pipeline designed for analysis of SARS-CoV-2 sequences from GISAID. The pipeline can be run interactively or by default, with a view to using SARS-CoV-2 sequence information to make an evolutionarily aware estimate of efficient epitopes on the spike protein for antibody design. While the code is open source, the data intended for use with the pipeline may only be obtained with express permission from GISAID. If you have any issues making use of the pipeline, or suggestions for how it could be improved, please open an issue or start a discussion!
 
 ## Installation
