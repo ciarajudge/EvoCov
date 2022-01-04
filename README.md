@@ -47,6 +47,8 @@ Below is a flowchart outlining the rough pipeline structure.
 ![Image](pipelineflowchart.jpg)
 
 ## Things to note
+1. If the text function isn't working anymore, contact me at judge.ciara@gmail.com or here on GitHub. The text message is sent using a subscription type service and I would just need to buy a bit more of an allowance.
+
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
